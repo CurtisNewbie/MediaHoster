@@ -1,6 +1,8 @@
 package com.curtisnewbie.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -111,6 +113,8 @@ public class MediaScanner {
         managedExecutor.runAsync(() -> {
             synchronized (mediaMap) {
                 scan(mediaMap, new File(mediaDir));
+                logger.info("Media Directory - \"" + mediaDir + "\" Scanned.\nMedia Files That Are Found Include:\n"
+                        + mediaMap.keySet().toString());
             }
         });
     }
@@ -143,5 +147,42 @@ public class MediaScanner {
             list.add(s);
         }
         return list;
+    }
+
+    /**
+     * Get media file inputstream by filename
+     * 
+     * @param fileName
+     * @return fileinputstream to the media file, or {@code NULL} if file doesn't
+     *         exist
+     */
+    public FileInputStream getMediaByName(String fileName) {
+        if (mediaMap.containsKey(fileName)) {
+            File file = mediaMap.get(fileName);
+            if (file.exists()) {
+                try {
+                    return new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get media file size in bytes by filename
+     * 
+     * @param fileName
+     * @return media file size in bytes, or 0 if file doesn't exist.
+     */
+    public long getMediaSizeByName(String fileName) {
+        if (mediaMap.containsKey(fileName)) {
+            File file = mediaMap.get(fileName);
+            if (file.exists()) {
+                return file.length();
+            }
+        }
+        return 0;
     }
 }
