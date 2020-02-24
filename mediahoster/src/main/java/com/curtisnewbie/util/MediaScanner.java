@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,5 +185,21 @@ public class MediaScanner {
             }
         }
         return 0;
+    }
+
+    /**
+     * Get last modified date of media file by filename
+     * 
+     * @param fileName
+     * @return last modified date, or {@code NULL} if file doesn't exist.
+     */
+    public Date getMediaLastModifiedByName(String fileName) {
+        if (mediaMap.containsKey(fileName)) {
+            File file = mediaMap.get(fileName);
+            if (file.exists()) {
+                return new Date(file.lastModified());
+            }
+        }
+        return null;
     }
 }
