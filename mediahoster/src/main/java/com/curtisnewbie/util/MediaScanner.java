@@ -71,6 +71,9 @@ public class MediaScanner {
      * @return whether configured path to the media directory is valid
      */
     public boolean isValidMediaDir() {
+        if (pathToMediaDir == null || pathToMediaDir.isEmpty())
+            return false;
+
         File file = new File(pathToMediaDir);
         if (file.exists() && file.isDirectory())
             return true;
