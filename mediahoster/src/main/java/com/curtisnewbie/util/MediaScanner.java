@@ -23,12 +23,27 @@ public class MediaScanner {
     @ConfigProperty(name = "path_to_media_directory")
     public String pathToMediaDir;
 
+    @Inject
+    @ConfigProperty(name = "default_media_directory")
+    public String defaultMediaDir;
+
+    private String mediaDir;
+
     private void init(@Observes StartupEvent startup) {
         if (isValidMediaDir()) {
             logger.info("MediaScanner Successfully init, Media Directory:\"" + pathToMediaDir + "\"");
+            mediaDir = pathToMediaDir;
         } else {
             logger.error(
-                    new IllegalMediaDirectoryException().getMessage() + " Media Directory:\"" + pathToMediaDir + "\"");
+                    "Configured path to your media directory is illegal. It must be an absolute path, and it must be a directory/folder. Configured Media Directory:\""
+                            + pathToMediaDir + "\"");
+            if (createDefaultMediaDir()) {
+                logger.info("Default media directory has been created: Media Directory:\"" + defaultMediaDir
+                        + "\". Please place your media files in it.");
+                mediaDir = defaultMediaDir;
+            } else {
+                mediaDir = null;
+            }
         }
     }
 
@@ -43,5 +58,18 @@ public class MediaScanner {
             return true;
         else
             return false;
+    }
+
+    /**
+     * Create default media directory
+     * 
+     * @return if the default media directory is created
+     */
+    public boolean createDefaultMediaDir() {
+        File file = new File(defaultMediaDir);
+        if (file.isDirectory() && file.exists())
+            return true;
+
+        return file.mkdir();
     }
 }
