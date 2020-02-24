@@ -17,19 +17,19 @@ import io.quarkus.runtime.StartupEvent;
 public class MediaScanner {
 
     @Inject
-    private Logger logger;
+    Logger logger;
 
     @Inject
     @ConfigProperty(name = "path_to_media_directory")
-    public String pathToMediaDir;
+    String pathToMediaDir;
 
     @Inject
     @ConfigProperty(name = "default_media_directory")
-    public String defaultMediaDir;
+    String defaultMediaDir;
 
     private String mediaDir;
 
-    private void init(@Observes StartupEvent startup) {
+    void init(@Observes StartupEvent startup) {
         if (isValidMediaDir()) {
             logger.info("MediaScanner Successfully init, Media Directory:\"" + pathToMediaDir + "\"");
             mediaDir = pathToMediaDir;
