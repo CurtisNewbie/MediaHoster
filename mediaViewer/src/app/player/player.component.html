@@ -1,0 +1,12 @@
+<div class="jumbotron">
+    <div class="container-fluid">
+        <h1>Media Viewer</h1>
+    </div>
+</div>
+<div class="container-fluid p-5">
+    <div class="embed-responsive embed-responsive-16by9">
+        <video id="player" [src]="srcUrl" class="p-3 embed-responsive-item" controls preload="metadata">
+        </video>
+    </div>
+    <app-select-bar (selected)="onSelected($event)"></app-select-bar>
+</div>

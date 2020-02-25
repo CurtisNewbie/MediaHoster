@@ -1,0 +1,7 @@
+<h3>Media Files</h3>
+
+<ul *ngFor=" let m of medias" class="list-group">
+    <a class="list-group-item list-group-item-action" (click)="play(m)">
+        {{m}}
+    </a>
+</ul>
