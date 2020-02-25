@@ -1,10 +1,11 @@
 package com.curtisnewbie.boundary;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -23,14 +24,13 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import com.curtisnewbie.util.MediaScanner;
+import com.curtisnewbie.util.MediaStreaming;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
 @Path("media")
 public class MediaResources {
-    // 15mb buffer
-    final int BUFFER_SIZE = 1024 * 1024 * 15;
 
     @Inject
     Logger logger;
@@ -74,40 +74,40 @@ public class MediaResources {
                 final Date lastModified = scanner.getMediaLastModifiedByName(filename);
 
                 long from = 0;
+                long to = length - 1;
                 if (rangeHeader != null) {
-                    try {
-                        // partial content, range specfied, skipped to specific byte
-                        // e.g., bytes = 0-123
-                        from = Long.parseLong(rangeHeader.split("=")[1].split("-")[0]);
-                        in.skip(from);
-                    } catch (NumberFormatException e) {
-                        // from = 0
+                    // partial content, range specfied, skipped to specific byte
+                    // e.g., bytes = 123-124
+                    String fromTo = rangeHeader.split("=")[1];
+                    Pattern pattern = Pattern.compile("^(\\d*)\\-(\\d*)$");
+                    Matcher matcher = pattern.matcher(fromTo);
+                    if (matcher.find()) {
+                        if (!matcher.group(1).isEmpty()) {
+                            from = Long.parseLong(matcher.group(1));
+                            in.skip(from);
+                        }
+                        if (!matcher.group(2).isEmpty()) {
+                            to = Long.parseLong(matcher.group(2));
+                        }
                     }
                 }
-                StreamingOutput streamOut = out -> {
-                    BufferedOutputStream bufOut = new BufferedOutputStream(out);
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    // only send one chunk/buffer of data
-                    if (in.read(buffer) != -1) {
-                        bufOut.write(buffer);
-                        bufOut.flush();
-                    }
-                };
-                // build response header
-                ResponseBuilder resp;
-                if (from > 0)
+                // 216 not satisfiable range
+                if (from < 0 || to >= length) {
+                    asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
+                            .header("Content-Range", "*/" + length).build());
+                } else {
+                    StreamingOutput streamOut = new MediaStreaming(in, from, to);
+                    // build response header
+                    ResponseBuilder resp = Response.ok(streamOut);
                     // partial content 206
-                    resp = Response.ok(streamOut).status(Status.PARTIAL_CONTENT);
-                else
-                    // ok 200
-                    resp = Response.ok(streamOut);
+                    if (rangeHeader != null)
+                        resp = resp.status(Status.PARTIAL_CONTENT);
 
-                long to = from + BUFFER_SIZE;
-                resp = resp.lastModified(lastModified)
-                        .header("Content-Range",
-                                String.format("bytes %d-%d/%d", from, to > length ? length - 1 : to, length))
-                        .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, length);
-                asyncResponse.resume(resp.build());
+                    resp = resp.lastModified(lastModified)
+                            .header("Content-Range", String.format("bytes %d-%d/%d", from, to, length))
+                            .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, length);
+                    asyncResponse.resume(resp.build());
+                }
             } catch (IOException e) {
                 logger.error(e);
             }
