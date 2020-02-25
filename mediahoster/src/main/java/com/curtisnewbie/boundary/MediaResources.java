@@ -73,10 +73,10 @@ public class MediaResources {
                 final long length = scanner.getMediaSizeByName(filename);
                 final Date lastModified = scanner.getMediaLastModifiedByName(filename);
 
-                // partial content, range specfied, skipped to specific byte
                 long from = 0;
                 if (rangeHeader != null) {
                     try {
+                        // partial content, range specfied, skipped to specific byte
                         // e.g., bytes = 0-123
                         from = Long.parseLong(rangeHeader.split("=")[1].split("-")[0]);
                         in.skip(from);
@@ -93,12 +93,13 @@ public class MediaResources {
                         bufOut.flush();
                     }
                 };
-
-                // build header for partial content 206
+                // build response header
                 ResponseBuilder resp;
                 if (from > 0)
+                    // partial content 206
                     resp = Response.ok(streamOut).status(Status.PARTIAL_CONTENT);
                 else
+                    // ok 200
                     resp = Response.ok(streamOut);
 
                 long to = from + BUFFER_SIZE;
