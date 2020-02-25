@@ -47,7 +47,7 @@ public class MediaResources {
     public Response getMediaList() {
         logger.info("GET - Retrieving Whole Media File List.");
         List<String> list = scanner.getMediaDirList();
-        return Response.ok(list).header("Access-Control-Allow-Origin", "http://localhost:4200").build();
+        return Response.ok(list).build();
     }
 
     @HEAD
@@ -59,8 +59,7 @@ public class MediaResources {
             return Response.noContent().build();
         else
             return Response.ok().status(Status.PARTIAL_CONTENT).header(HttpHeaders.CONTENT_LENGTH, len)
-                    .header("Accept-Ranges", "bytes").header("Access-Control-Allow-Origin", "http://localhost:4200")
-                    .build();
+                    .header("Accept-Ranges", "bytes").build();
 
     }
 
@@ -103,7 +102,7 @@ public class MediaResources {
                     resp = Response.ok(streamOut);
 
                 long to = from + BUFFER_SIZE;
-                resp = resp.header("Access-Control-Allow-Origin", "*").lastModified(lastModified)
+                resp = resp.lastModified(lastModified)
                         .header("Content-Range",
                                 String.format("bytes %d-%d/%d", from, to > length ? length - 1 : to, length))
                         .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, length);
