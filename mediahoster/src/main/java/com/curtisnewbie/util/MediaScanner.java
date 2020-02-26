@@ -129,7 +129,7 @@ public class MediaScanner {
             if (f.isDirectory()) {
                 scan(mediaMap, f);
             } else {
-                String path = f.getPath();
+                String path = convertSlash(f.getPath());
                 if (!mediaMap.containsKey(path)) {
                     mediaMap.put(path, f);
                 }
@@ -158,6 +158,7 @@ public class MediaScanner {
      *         exist
      */
     public FileInputStream getMediaByName(String fileName) {
+        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
@@ -178,6 +179,7 @@ public class MediaScanner {
      * @return media file size in bytes, or 0 if file doesn't exist.
      */
     public long getMediaSizeByName(String fileName) {
+        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
@@ -201,5 +203,10 @@ public class MediaScanner {
             }
         }
         return null;
+    }
+
+    /** Convert all "\" to "/", this is for Windows OS compatibility */
+    public String convertSlash(String str) {
+        return str.replace("\\", "/");
     }
 }
