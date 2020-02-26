@@ -8,17 +8,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.scheduler.Scheduled;
 
 /**
  * Scan all available media files
@@ -41,7 +42,9 @@ public class MediaScanner {
     ManagedExecutor managedExecutor;
 
     private String mediaDir;
-    private Map<String, File> mediaMap;
+
+    /** Concurrent Hash map for media files */
+    private Map<String, File> mediaMap = new ConcurrentHashMap<>();
 
     void init(@Observes StartupEvent startup) {
         if (isValidMediaDir()) {
@@ -58,13 +61,6 @@ public class MediaScanner {
             } else {
                 mediaDir = null;
             }
-        }
-
-        if (mediaDir != null) {
-            mediaMap = new HashMap<>();
-            scanMediaDir();
-        } else {
-            mediaMap = null;
         }
     }
 
@@ -99,39 +95,38 @@ public class MediaScanner {
 
     /**
      * <p>
-     * Scanning media directory and updating the {@code Map mediaMap}.
-     * </p>
-     * <p>
-     * This method obtains a lock of {@code Map mediaMap} and creates a new thread,
-     * which is dedicated to scan the file trees under the media directory. This
-     * thread is executed and managed by the container.
+     * Scanning media directory and updating the {@code Map mediaMap} in every 1
+     * sec.
      * </p>
      * 
      * @see MediaScanner#scan(Map, File)
      */
-    @Transactional
+    @Scheduled(every = "1s")
     public void scanMediaDir() {
-        managedExecutor.runAsync(() -> {
-            synchronized (mediaMap) {
-                scan(mediaMap, new File(mediaDir));
-                logger.info("Media Directory - \"" + mediaDir + "\" Scanned.\nMedia Files That Are Found Include:\n"
-                        + mediaMap.keySet().toString());
+        if (mediaDir != null) {
+            Map<String, File> tempMap = new HashMap<>();
+            scan(tempMap, new File(mediaDir));
+            for (var pair : mediaMap.entrySet()) {
+                if (!pair.getValue().exists())
+                    mediaMap.remove(pair.getKey());
             }
-        });
+            // new media files added to the dir
+            mediaMap.putAll(tempMap);
+        }
     }
 
     /**
      * Helper method that scans files recursively
      */
-    private void scan(Map<String, File> mediaMap, File dir) {
+    private void scan(Map<String, File> tempMap, File dir) {
         var list = dir.listFiles();
         for (File f : list) {
             if (f.isDirectory()) {
-                scan(mediaMap, f);
+                scan(tempMap, f);
             } else {
                 String path = convertSlash(f.getPath());
-                if (!mediaMap.containsKey(path)) {
-                    mediaMap.put(path, f);
+                if (!tempMap.containsKey(path)) {
+                    tempMap.put(path, f);
                 }
             }
         }
@@ -196,6 +191,7 @@ public class MediaScanner {
      * @return last modified date, or {@code NULL} if file doesn't exist.
      */
     public Date getMediaLastModifiedByName(String fileName) {
+        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
