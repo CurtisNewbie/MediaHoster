@@ -1,6 +1,6 @@
 # Media Hoster
 
-A program that scans, hosts and streams media files to other devices using REST web services/ HTTP protocols.
+A program that scans (every 1 second), hosts and streams media files to other devices using REST web services/ HTTP protocols.
 
 **Disclaimer:_You should only use it for non-sensetive data and in secure network, as it does not provide any encryption. The data transferred between your devices are only protected by your own network, e.g., WIFI and so on. I personally only use it for streaming movies in local network._**
 
@@ -39,7 +39,7 @@ If you want to run the Media Viewer (angular app) on a seperate server, you need
 
 ## How To Use it?
 
-After knowing how to run it, this section tells you how to interact with the media hoster and media viewer. I assume that your are using the bundled fat jar version in release.
+After knowing how to run it, this section tells you how to interact with the media hoster and media viewer. I assume that your are using the bundled fat jar version in release. **If not specified, the Media Hoster always creates a folder called `media/`, and it expects you to put all your media files in it**. Customisation is possible, but you have to build the fat Jar on your on. For more information about this, read the last section.
 
 The Media Viewer is simply a one-page web application which interact with the Media Hoster for you, you access the webpage by entering the URL as follows:
 
