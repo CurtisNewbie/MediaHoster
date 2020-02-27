@@ -67,10 +67,15 @@ public class MediaResources {
 
     @GET
     @Produces("video/mp4")
-    public void getExampleMedia(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
+    public void getMediaByName(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
             @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
-            try (final BufferedInputStream in = new BufferedInputStream(scanner.getMediaByName(filename));) {
+            var fileIn = scanner.getMediaByName(filename);
+            if (fileIn == null) {
+                asyncResponse.resume(Response.noContent().build());
+                return;
+            }
+            try (final BufferedInputStream in = new BufferedInputStream(fileIn)) {
                 final long length = scanner.getMediaSizeByName(filename);
                 final Date lastModified = scanner.getMediaLastModifiedByName(filename);
 
@@ -98,12 +103,12 @@ public class MediaResources {
                 if (from < 0 || to >= length) {
                     asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
                             .header("Content-Range", "*/" + length).build());
+                    return;
                 } else {
                     StreamingOutput streamOut = new MediaStreaming(in, from, to);
-                    // build response header
                     ResponseBuilder resp = Response.ok(streamOut);
-                    // partial content 206
                     if (rangeHeader != null)
+                        // partial content 206
                         resp = resp.status(Status.PARTIAL_CONTENT);
 
                     resp = resp.lastModified(lastModified)
