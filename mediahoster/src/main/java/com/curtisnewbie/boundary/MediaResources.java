@@ -113,7 +113,7 @@ public class MediaResources {
 
                     resp = resp.lastModified(lastModified)
                             .header("Content-Range", String.format("bytes %d-%d/%d", from, to, length))
-                            .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, length);
+                            .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, to - from + 1);
                     asyncResponse.resume(resp.build());
                 }
             } catch (IOException e) {
