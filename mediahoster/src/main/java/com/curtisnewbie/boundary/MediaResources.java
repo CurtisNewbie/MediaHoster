@@ -69,7 +69,6 @@ public class MediaResources {
     @Produces("video/mp4")
     public void getExampleMedia(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
             @HeaderParam("Range") String rangeHeader) {
-        logger.info("GET - Retrieving Media File - \"" + filename + "\".");
         managedExecutor.runAsync(() -> {
             try (final BufferedInputStream in = new BufferedInputStream(scanner.getMediaByName(filename));) {
                 final long length = scanner.getMediaSizeByName(filename);
@@ -93,6 +92,8 @@ public class MediaResources {
                         }
                     }
                 }
+                logger.info("GET - Retrieving Media File - \"" + filename + "\""
+                        + (rangeHeader != null ? String.format(" Requested Byte Range %d-%d", from, to) : ""));
                 // 216 not satisfiable range
                 if (from < 0 || to >= length) {
                     asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
