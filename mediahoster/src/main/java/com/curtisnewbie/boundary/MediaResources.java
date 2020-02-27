@@ -54,13 +54,15 @@ public class MediaResources {
     @Produces("video/mp4")
     public Response header(@QueryParam("filename") String filename) {
         logger.info("HEAD - Retrieving " + filename);
+        if (filename == null)
+            return Response.noContent().build();
+
         long len = scanner.getMediaSizeByName(filename);
         if (len > 0)
-            return Response.noContent().build();
-        else
             return Response.ok().status(Status.PARTIAL_CONTENT).header(HttpHeaders.CONTENT_LENGTH, len)
                     .header("Accept-Ranges", "bytes").build();
-
+        else
+            return Response.noContent().build();
     }
 
     @GET
