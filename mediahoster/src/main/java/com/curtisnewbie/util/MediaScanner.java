@@ -146,6 +146,15 @@ public class MediaScanner {
     }
 
     /**
+     * Get Size of the {@code Map mediaMap}
+     * 
+     * @return size of {@code Map mediaMap}
+     */
+    public int getMediaMapSize() {
+        return mediaMap.size();
+    }
+
+    /**
      * Get media file inputstream by filename
      * 
      * @param fileName

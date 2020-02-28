@@ -59,8 +59,7 @@ public class MediaResources {
 
         long len = scanner.getMediaSizeByName(filename);
         if (len > 0)
-            return Response.ok().status(Status.PARTIAL_CONTENT).header(HttpHeaders.CONTENT_LENGTH, len)
-                    .header("Accept-Ranges", "bytes").build();
+            return Response.ok().status(Status.PARTIAL_CONTENT).header("Accept-Ranges", "bytes").build();
         else
             return Response.noContent().build();
     }
@@ -120,5 +119,13 @@ public class MediaResources {
                 logger.error(e);
             }
         });
+    }
+
+    @GET
+    @Path("amount")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getNumberOfMedia() {
+        logger.info("GET - Retrieving Amount of Media Files.");
+        return Response.ok(scanner.getMediaMapSize()).build();
     }
 }
