@@ -60,11 +60,15 @@ public class MediaResourcesTest {
     }
 
     @Test
-    @DisplayName("Should return partial content 206 response with Content-Length of 2 and a correct content-range.")
+    @DisplayName("Should return partial content 206 response with correct Content-Length and Content-Range.")
     public void shouldReturnPartialContentResp(TestInfo testInfo) {
         given().param("filename", "media/mediaOne.mp4").header("Range", "Bytes=0-1").when().get("/media").then()
                 .statusCode(206).header("Content-Length", "2").and()
                 .header("Content-Range", String.format("bytes %d-%d/%d", 0, 1, DEMO_DATA.getBytes().length));
+
+        given().param("filename", "media/mediaOne.mp4").header("Range", "Bytes=1-3").when().get("/media").then()
+                .statusCode(206).header("Content-Length", "3").and()
+                .header("Content-Range", String.format("bytes %d-%d/%d", 1, 3, DEMO_DATA.getBytes().length));
     }
 
     @Test
