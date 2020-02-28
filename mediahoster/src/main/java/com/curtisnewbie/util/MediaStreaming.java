@@ -1,7 +1,9 @@
 package com.curtisnewbie.util;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.ws.rs.WebApplicationException;
@@ -14,25 +16,30 @@ public class MediaStreaming implements StreamingOutput {
 
     private long from;
     private long to;
-    private InputStream in;
+    private File file;
 
-    public MediaStreaming(InputStream in, long from, long to) {
-        this.in = in;
+    public MediaStreaming(File file, long from, long to) {
+        this.file = file;
         this.from = from;
         this.to = to;
     }
 
     @Override
     public void write(OutputStream output) throws IOException, WebApplicationException {
-        long range = to - from + 1;
-        byte[] buffer = new byte[range < BUFFER_SIZE ? (int) range : BUFFER_SIZE];
-        while (in.read(buffer) != -1) {
-            output.write(buffer);
-            output.flush();
-            range -= buffer.length;
-            if (range <= 0)
-                break;
+        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
+            if (from > 0) {
+                in.skip(from);
+            }
+
+            long range = to - from + 1;
+            byte[] buffer = new byte[range < BUFFER_SIZE ? (int) range : BUFFER_SIZE];
+            while (in.read(buffer) != -1) {
+                output.write(buffer);
+                output.flush();
+                range -= buffer.length;
+                if (range <= 0)
+                    break;
+            }
         }
     }
-
 }

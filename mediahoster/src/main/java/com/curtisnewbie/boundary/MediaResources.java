@@ -1,7 +1,6 @@
 package com.curtisnewbie.boundary;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -69,54 +68,50 @@ public class MediaResources {
     public void getMediaByName(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
             @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
-            var fileIn = scanner.getMediaByName(filename);
-            if (fileIn == null) {
+            if (!scanner.hasMediaFile(filename)) {
                 asyncResponse.resume(Response.noContent().build());
                 return;
             }
-            try (final BufferedInputStream in = new BufferedInputStream(fileIn)) {
-                final long length = scanner.getMediaSizeByName(filename);
-                final Date lastModified = scanner.getMediaLastModifiedByName(filename);
 
-                long from = 0;
-                long to = length - 1;
-                if (rangeHeader != null) {
-                    // partial content, range specfied, skipped to specific byte
-                    // e.g., bytes = 123-124
-                    String fromTo = rangeHeader.split("=")[1];
-                    Pattern pattern = Pattern.compile("^(\\d*)\\-(\\d*)$");
-                    Matcher matcher = pattern.matcher(fromTo);
-                    if (matcher.find()) {
-                        if (!matcher.group(1).isEmpty()) {
-                            from = Long.parseLong(matcher.group(1));
-                            in.skip(from);
-                        }
-                        if (!matcher.group(2).isEmpty()) {
-                            to = Long.parseLong(matcher.group(2));
-                        }
+            final File mediaFile = scanner.getMediaByName(filename);
+            final long length = scanner.getMediaSizeByName(filename);
+            final Date lastModified = scanner.getMediaLastModifiedByName(filename);
+
+            long from = 0;
+            long to = length - 1;
+            if (rangeHeader != null) {
+                // partial content, range specfied, skipped to specific byte
+                // e.g., bytes = 123-124
+                String fromTo = rangeHeader.split("=")[1];
+                Pattern pattern = Pattern.compile("^(\\d*)\\-(\\d*)$");
+                Matcher matcher = pattern.matcher(fromTo);
+                if (matcher.find()) {
+                    if (!matcher.group(1).isEmpty()) {
+                        from = Long.parseLong(matcher.group(1));
+                    }
+                    if (!matcher.group(2).isEmpty()) {
+                        to = Long.parseLong(matcher.group(2));
                     }
                 }
-                logger.info("GET - Retrieving Media File - \"" + filename + "\""
-                        + (rangeHeader != null ? String.format(" Requested Byte Range %d-%d", from, to) : ""));
-                // 216 not satisfiable range
-                if (from < 0 || to >= length) {
-                    asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
-                            .header("Content-Range", "*/" + length).build());
-                    return;
-                } else {
-                    StreamingOutput streamOut = new MediaStreaming(in, from, to);
-                    ResponseBuilder resp = Response.ok(streamOut);
-                    if (rangeHeader != null)
-                        // partial content 206
-                        resp = resp.status(Status.PARTIAL_CONTENT);
+            }
+            logger.info("GET - Retrieving Media File - \"" + filename + "\""
+                    + (rangeHeader != null ? String.format(" Requested Byte Range %d-%d", from, to) : ""));
+            // 216 not satisfiable range
+            if (from < 0 || to >= length) {
+                asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
+                        .header("Content-Range", "*/" + length).build());
+                return;
+            } else {
+                StreamingOutput streamOut = new MediaStreaming(mediaFile, from, to);
+                ResponseBuilder resp = Response.ok(streamOut);
+                if (rangeHeader != null)
+                    // partial content 206
+                    resp = resp.status(Status.PARTIAL_CONTENT);
 
-                    resp = resp.lastModified(lastModified)
-                            .header("Content-Range", String.format("bytes %d-%d/%d", from, to, length))
-                            .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, to - from + 1);
-                    asyncResponse.resume(resp.build());
-                }
-            } catch (IOException e) {
-                logger.error(e);
+                resp = resp.lastModified(lastModified)
+                        .header("Content-Range", String.format("bytes %d-%d/%d", from, to, length))
+                        .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, to - from + 1);
+                asyncResponse.resume(resp.build());
             }
         });
     }

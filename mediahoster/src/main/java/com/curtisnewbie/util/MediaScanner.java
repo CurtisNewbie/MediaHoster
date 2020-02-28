@@ -1,8 +1,6 @@
 package com.curtisnewbie.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -158,22 +156,31 @@ public class MediaScanner {
      * Get media file inputstream by filename
      * 
      * @param fileName
-     * @return fileinputstream to the media file, or {@code NULL} if file doesn't
-     *         exist
+     * @return the media file, or {@code NULL} if file doesn't exist
      */
-    public FileInputStream getMediaByName(String fileName) {
+    public File getMediaByName(String fileName) {
         fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
-                try {
-                    return new FileInputStream(file);
-                } catch (FileNotFoundException e) {
-                    logger.error(e.getMessage());
-                }
+                return file;
             }
         }
         return null;
+    }
+
+    /**
+     * Check whether the media file exists
+     * 
+     * @param filename
+     * @return whether the media file exists
+     */
+    public boolean hasMediaFile(String filename) {
+        filename = convertSlash(filename);
+        if (mediaMap.containsKey(filename))
+            return true;
+        else
+            return false;
     }
 
     /**
