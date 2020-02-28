@@ -14,6 +14,7 @@ This repository contains two main applications:
 - Java 11
 - Nodejs (if you want to run frontend seperately)
 - Maven (if you are running the program that is not packaged)
+- <a href="https://www.graalvm.org/">GraalVM</a> (if you want to run the native/compiled version)
 
 ## How To Run it?
 
@@ -32,6 +33,10 @@ However, you must be aware that, by default, this program is packaged to be a fa
 If you have modified the configuration or code, and wish to build the whole bundled version on your own. I have created a simple script that should work for you. It is at root directory, named "build.sh". If you are using Windows OS, you may need to modify it a bit or make one for yourself. To run it, simply enter:
 
     ./build.sh
+
+A script for native, bundled version is also availble below, but you should have GraavlVM installed. Note that this script is for Linux OS.
+
+    ./native_build.sh
 
 ### Running Media Hoster and Media Viewer Individually
 
