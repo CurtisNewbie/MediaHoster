@@ -7,7 +7,7 @@ A program that scans (every 1 second), hosts and streams media files to other de
 This repository contains two main applications:
 
 - **Media Hoster** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediahoster">"./mediahoster"</a>) scans files in specified folder, and exposes them as resources via HTTP/REST web services. Media resources can be <a href="https://medium.com/canal-tech/how-video-streaming-works-on-the-web-an-introduction-7919739f7e1">streamed in chunked data</a> (e.g., played directly on your video player or web browser) or downloaded. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests">Partial Content (206) and Byte-Range Requests</a> are also supported.
-- **Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) is an Angular application, that facilitates the interaction with the Media Hoster, using this is optional. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the whole list of available media files, and plays them on a standard HTML Video tag.
+- **Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) is an Angular application, that facilitates the interaction with the Media Hoster, using this is optional. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the playlist, plays them on the webpage and does all the HTTP calls for you.
 
 **Prerequisite**
 
@@ -18,25 +18,15 @@ This repository contains two main applications:
 
 ## How To Run it?
 
+This section tells you how to run the executable, the next section shows you how to actually use it. **I strongly recommend you to use the bundled fat jar version that is available in <a href="https://github.com/CurtisNewbie/MediaHoster/releases">release</a>, so that you always talk to the same hostname and port, and you only need to run one application.**
+
 ### Running Bundled Version
 
-This section tells you how to run the executable, the next section shows you how to actually use it.
+If the program is packaged and the angular app is bundled inside the jar file (e.g., the ones in release), you can run it in the normal way. It will start listening to localhost:8080.
 
-If the program is packaged and the angular app is bundled inside the jar file, you can run it in the normal way. It will start listening to localhost:8080. **I strongly recommend you to use the bundled fat jar version, so that you always talk to the same hostname and same port.**
-
-    java -jar mediahoster-1.0.2-SNAPSHOT-runner.jar
+    java -jar mediahoster-1.0.2-bundled.jar
 
 However, you must be aware that, by default, this program is packaged to be a fat jar that includes all dependencies (around 14mb including angular app). This command will not work if you intend to run a thin jar without `/lib` files. More on <a href="https://quarkus.io/guides/getting-started">Quarkus</a>.
-
-### Package Bundled Version Using Script
-
-If you have modified the configuration or code, and wish to build the whole bundled version on your own. I have created a simple script that should work for you. It is at root directory, named "build.sh". If you are using Windows OS, you may need to modify it a bit or make one for yourself. To run it, simply enter:
-
-    ./build.sh
-
-A script for native, bundled version is also availble below, but you should have GraavlVM installed. Note that this script is for Linux OS.
-
-    ./native_build.sh
 
 ### Running Media Hoster and Media Viewer Individually
 
@@ -44,7 +34,7 @@ If the program is not packaged, you need to run it with maven. Navigate to `./me
 
     mvn clean quarkus:dev
 
-If you want to package a fat jar for Media Hoster, simple executes following command with maven in `"./mediahoster"`:
+If you want to package a fat jar for Media Hoster, simple executes following command with maven in `./mediahoster`:
 
     mvn clean package
 
@@ -66,21 +56,37 @@ The Media Viewer is simply a one-page web application which interacts with the M
 
 This ip address is your IPv4. If you are on Windows, you can find your ip using the command `ipconfig` in cmd. If you are on linux, you can find it using the command `hostname -I` in bash. You should make sure all devices are in the same network.
 
-If you want to interact with the Media Hoster directly, there are two HTTP requests available. To get a list of all available media files:
+If you want to interact with the Media Hoster directly, there are three HTTP requests available. To get a list of all available media files:
 
-    GET - return an array of names of media files
+    GET - return an array of names of media files (JSON)
 
     http://yourIp:8080/media/all
 
 To get a specific media file for streaming or downloading, your provide name of media file in query parameter as below:
 
-    GET - return media file
+    GET - return media file (video/mp4)
 
     http://yourIp:8080/media?filename=mediaFileName
 
     e.g.,
 
     http://192.168.1.1:8080/media?filename=tonystark.mp4
+
+To get the number of media files available:
+
+    GET - return the number of media files available (text/plain)
+    
+    http://yourIp:8080/media/amount
+
+## Packaging Bundled Version Using Script
+
+If you have modified the configuration or code, and wish to build the whole bundled version on your own. I have created a simple script that should work for you. It is at root directory, named "build.sh". If you are using Windows OS, you may need to modify it a bit or make one for yourself. To run it, simply enter:
+
+    ./build.sh
+
+A script for native, bundled version is also availble below, but you should have GraavlVM installed. Note that this script is for Linux OS. To run it, simply enter:
+
+    ./native_build.sh
 
 ## Optional Configuration
 
