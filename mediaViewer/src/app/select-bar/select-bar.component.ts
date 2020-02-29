@@ -9,6 +9,10 @@ import { HttpService } from "../http.service";
 export class SelectBarComponent implements OnInit {
   medias: string[];
   amount: number;
+  searchedText: string = "";
+  /** indicies of search result in medias[] */
+  searchResult: number[] = [];
+
   @Output() selected = new EventEmitter<string>();
 
   constructor(private http: HttpService) {}
@@ -36,5 +40,25 @@ export class SelectBarComponent implements OnInit {
     this.http.fetchMediaAmount().subscribe((amount: number) => {
       this.amount = amount;
     });
+  }
+
+  /**
+   * Search given text
+   *
+   * @param text
+   */
+  search() {
+    if (this.searchedText.length > 0 && !this.searchedText.match(/\s+/)) {
+      this.searchResult = [];
+      for (let i = 0; i < this.medias.length; i++) {
+        if (this.medias[i].includes(this.searchedText)) {
+          this.searchResult.push(i);
+        }
+      }
+    } else {
+      if (this.searchResult.length > 0)
+        // reset
+        this.searchResult = [];
+    }
   }
 }
