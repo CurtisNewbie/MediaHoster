@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import { Observable } from "rxjs";
 import { HttpService } from "../http.service";
 
 @Component({
@@ -9,12 +8,14 @@ import { HttpService } from "../http.service";
 })
 export class SelectBarComponent implements OnInit {
   medias: string[];
+  amount: number;
   @Output() selected = new EventEmitter<string>();
 
   constructor(private http: HttpService) {}
 
   ngOnInit() {
     this.fetchMediaList();
+    this.fetchMediaAmount();
   }
 
   /**
@@ -28,6 +29,12 @@ export class SelectBarComponent implements OnInit {
   fetchMediaList() {
     this.http.fetchMediaList().subscribe((val: string[]) => {
       this.medias = val;
+    });
+  }
+
+  fetchMediaAmount() {
+    this.http.fetchMediaAmount().subscribe((amount: number) => {
+      this.amount = amount;
     });
   }
 }
