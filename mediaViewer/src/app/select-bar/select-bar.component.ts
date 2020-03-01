@@ -50,8 +50,9 @@ export class SelectBarComponent implements OnInit {
   search() {
     if (this.searchedText.length > 0 && !this.searchedText.match(/\s+/)) {
       this.searchResult = [];
+      this.searchedText = this.searchedText.toLowerCase();
       for (let i = 0; i < this.medias.length; i++) {
-        if (this.medias[i].includes(this.searchedText)) {
+        if (this.medias[i].toLowerCase().includes(this.searchedText)) {
           this.searchResult.push(i);
         }
       }
