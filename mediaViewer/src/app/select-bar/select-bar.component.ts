@@ -32,7 +32,7 @@ export class SelectBarComponent implements OnInit {
 
   fetchMediaList() {
     this.http.fetchMediaList().subscribe((val: string[]) => {
-      this.medias = val;
+      this.medias = val.sort();
     });
   }
 
