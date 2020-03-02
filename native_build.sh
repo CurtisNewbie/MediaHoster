@@ -15,6 +15,10 @@ echo ">>> Packaging Native Quarkus Media Hoster"
 mvn -f ./mediahoster clean package -Pnative 
 echo
 
+echo ">>> Removing compiled angular files in working dir"
+rm -rvf ./mediahoster/src/main/resources/META-INF/resources/*
+echo
+
 echo ">>> Moving Bundled Fat Jar To Root Directory"
 mv ./mediahoster/target/mediahoster-*-runner .
 
