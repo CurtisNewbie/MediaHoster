@@ -40,6 +40,7 @@ public class MediaStreaming implements StreamingOutput {
                 if (range <= 0)
                     break;
             }
+        } catch (IOException e) {
         }
     }
 }
