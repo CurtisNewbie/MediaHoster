@@ -17,20 +17,25 @@ import org.junit.jupiter.api.TestInfo;
 @QuarkusTest
 public class MediaResourcesTest {
 
+    static final String MEDIA_DIR = "media_test";
+
     static final String MEDIA_ONE = "mediaOne.mp4";
     static final String MEDIA_TWO = "mediaTwo.mp4";
     static final String DEMO_DATA = "1234";
 
+    static File mediaOne;
+    static File mediaTwo;
+
     @BeforeAll
     public static void createDemoMediaFiles() throws IOException {
-        File file = new File("media");
+        File file = new File(MEDIA_DIR);
         if (!file.exists()) {
             file.mkdir();
 
             if (file.exists()) {
                 // create demo files
-                File mediaOne = new File(file, MEDIA_ONE);
-                File mediaTwo = new File(file, MEDIA_TWO);
+                mediaOne = new File(file, MEDIA_ONE);
+                mediaTwo = new File(file, MEDIA_TWO);
                 mediaOne.createNewFile();
                 mediaTwo.createNewFile();
 
@@ -43,14 +48,13 @@ public class MediaResourcesTest {
 
     @AfterAll
     public static void removeDemoMediaFiles() {
-        File file = new File("media");
-        if (file.exists() && file.isDirectory()) {
-            var list = file.listFiles();
-            for (File f : list)
-                f.delete();
-
+        File file = new File(MEDIA_DIR);
+        if (mediaOne != null && mediaOne.exists())
+            mediaOne.delete();
+        if (mediaTwo != null && mediaTwo.exists())
+            mediaTwo.delete();
+        if (file.listFiles().length == 0)
             file.delete();
-        }
     }
 
     @Test
@@ -62,11 +66,11 @@ public class MediaResourcesTest {
     @Test
     @DisplayName("Should return partial content 206 response with correct Content-Length and Content-Range.")
     public void shouldReturnPartialContentResp(TestInfo testInfo) {
-        given().param("filename", "media/mediaOne.mp4").header("Range", "Bytes=0-1").when().get("/media").then()
+        given().param("filename", MEDIA_DIR + "/mediaOne.mp4").header("Range", "Bytes=0-1").when().get("/media").then()
                 .statusCode(206).header("Content-Length", "2").and()
                 .header("Content-Range", String.format("bytes %d-%d/%d", 0, 1, DEMO_DATA.getBytes().length));
 
-        given().param("filename", "media/mediaOne.mp4").header("Range", "Bytes=1-3").when().get("/media").then()
+        given().param("filename", MEDIA_DIR + "/mediaOne.mp4").header("Range", "Bytes=1-3").when().get("/media").then()
                 .statusCode(206).header("Content-Length", "3").and()
                 .header("Content-Range", String.format("bytes %d-%d/%d", 1, 3, DEMO_DATA.getBytes().length));
     }
@@ -74,13 +78,13 @@ public class MediaResourcesTest {
     @Test
     @DisplayName("Should return OK 200 response for request without range.")
     public void shouldReturnOkResp(TestInfo testInfo) {
-        given().param("filename", "media/" + MEDIA_ONE).when().get("/media").then().statusCode(200);
+        given().param("filename", MEDIA_DIR + "/" + MEDIA_ONE).when().get("/media").then().statusCode(200);
     }
 
     @Test
     @DisplayName("Should return 206 response for HEAD request, and which contains \"Accept-Range: bytes\" header.")
     public void shouldReturnCorrectHeadResp(TestInfo testInfo) {
-        given().param("filename", "media/" + MEDIA_ONE).when().head("/media").then().assertThat().statusCode(206)
+        given().param("filename", MEDIA_DIR + "/" + MEDIA_ONE).when().head("/media").then().assertThat().statusCode(206)
                 .header("Accept-Ranges", "bytes");
     }
 }
