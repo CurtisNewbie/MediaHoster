@@ -7,14 +7,17 @@ import { HttpService } from "../http.service";
   styleUrls: ["./player.component.css"]
 })
 export class PlayerComponent implements OnInit {
+  readonly URL_WITH_PARAM: string = `${this.http.getBaseUrl()}?filename=`;
   srcUrl: string = "";
-  constructor(private http: HttpService, private eleRef: ElementRef) {}
+  displayedUrl: string = "";
+  constructor(private http: HttpService) {}
 
   ngOnInit() {}
 
   // change srcUrl
   onSelected(mediaName: string) {
-    this.srcUrl = `${this.http.getBaseUrl()}?filename=${mediaName}`;
+    this.srcUrl = this.URL_WITH_PARAM + mediaName;
+    this.displayedUrl = mediaName;
     console.log(this.srcUrl);
   }
 }
