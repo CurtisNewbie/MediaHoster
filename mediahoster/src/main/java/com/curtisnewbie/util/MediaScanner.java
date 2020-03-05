@@ -29,11 +29,11 @@ public class MediaScanner {
     Logger logger;
 
     @Inject
-    @ConfigProperty(name = "path_to_media_directory")
+    @ConfigProperty(name = "path_to_media_directory", defaultValue = "media")
     String pathToMediaDir;
 
     @Inject
-    @ConfigProperty(name = "default_media_directory")
+    @ConfigProperty(name = "default_media_directory", defaultValue = "media")
     String defaultMediaDir;
 
     @Inject
