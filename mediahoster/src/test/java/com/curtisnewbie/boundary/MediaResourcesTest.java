@@ -87,4 +87,10 @@ public class MediaResourcesTest {
         given().param("filename", MEDIA_DIR + "/" + MEDIA_ONE).when().head("/media").then().assertThat().statusCode(206)
                 .header("Accept-Ranges", "bytes");
     }
+
+    @Test
+    @DisplayName("Should return not found 404 response if the mediafile is not found")
+    public void shouldReturnNotFoundResp() {
+        given().param("filename", "YouCannotFindMe").when().get("/media").then().statusCode(404);
+    }
 }
