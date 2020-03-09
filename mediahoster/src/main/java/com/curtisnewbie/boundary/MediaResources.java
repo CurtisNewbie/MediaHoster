@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -54,13 +55,13 @@ public class MediaResources {
     public Response header(@QueryParam("filename") String filename) {
         logger.info("HEAD - Retrieving " + filename);
         if (filename == null)
-            return Response.noContent().build();
+            throw new NotFoundException();
 
         long len = scanner.getMediaSizeByName(filename);
         if (len > 0)
             return Response.ok().status(Status.PARTIAL_CONTENT).header("Accept-Ranges", "bytes").build();
         else
-            return Response.noContent().build();
+            throw new NotFoundException();
     }
 
     @GET
@@ -69,7 +70,7 @@ public class MediaResources {
             @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
             if (!scanner.hasMediaFile(filename)) {
-                asyncResponse.resume(Response.noContent().build());
+                asyncResponse.resume(Response.status(Status.NOT_FOUND).build());
                 return;
             }
 
