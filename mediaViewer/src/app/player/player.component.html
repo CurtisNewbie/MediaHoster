@@ -3,8 +3,8 @@
         <h1>Media Viewer</h1>
     </div>
 </div>
-<div class="container-fluid p-5">
-    <h4 #playerRef *ngIf="srcUrl" style="font-size: 90%;"><span class="alert alert-success">Currently Playing:
+<div #playerRef class="container-fluid p-5">
+    <h4 *ngIf="srcUrl" style="font-size: 90%;"><span class="alert alert-success">Currently Playing:
             {{displayedUrl}}</span></h4>
     <div class="ml-5 mr-5">
         <div class="embed-responsive embed-responsive-16by9">
