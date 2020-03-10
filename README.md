@@ -24,7 +24,7 @@ This section tells you how to run the executable, the next section shows you how
 
 If the program is packaged and the angular app is bundled inside the jar file (e.g., the ones in release), you can run it in the normal way. It will start listening to localhost:8080.
 
-    java -jar mediahoster-1.0.3-bundled.jar
+    java -jar mediahoster-1.0.4-bundled.jar
 
 However, you must be aware that, by default, this program is packaged to be a fat jar that includes all dependencies (around 14mb including angular app). This command will not work if you intend to run a thin jar without `/lib` files. More on <a href="https://quarkus.io/guides/getting-started">Quarkus</a>.
 
