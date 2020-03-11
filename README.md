@@ -6,15 +6,15 @@ A program that scans (every 1 second), hosts and streams media files to other de
 
 This repository contains two main applications:
 
-- **Media Hoster** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediahoster">"./mediahoster"</a>) scans files in specified folder, and exposes them as resources via HTTP/REST web services. Media resources can be <a href="https://medium.com/canal-tech/how-video-streaming-works-on-the-web-an-introduction-7919739f7e1">streamed in chunked data</a> (e.g., played directly on your video player or web browser) or downloaded. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests">Partial Content (206) and Byte-Range Requests</a> are also supported.
-- **Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) is an Angular application, that facilitates the interaction with the Media Hoster, using this is optional. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the playlist, plays them on the webpage and does all the HTTP calls for you.
+- **Quarkus - Media Hoster** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediahoster">"./mediahoster"</a>) that scans files in specified folder, and exposes them as resources via HTTP/REST web services. Media resources can be <a href="https://medium.com/canal-tech/how-video-streaming-works-on-the-web-an-introduction-7919739f7e1">streamed in chunked data</a> (e.g., played directly on your video player or web browser) or downloaded. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests">Partial Content (206) and Byte-Range Requests</a> are also supported.
+- **Angular - Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) that facilitates the interaction with the Media Hoster, using this is optional. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the playlist, plays them on the webpage and does all the HTTP calls for you.
 
 **Prerequisite**
 
 - Java 11
-- Nodejs (if you want to run frontend seperately)
-- Maven (if you are running the program that is not packaged)
-- <a href="https://www.graalvm.org/">GraalVM</a> (if you want to run the native/compiled version)
+- Nodejs (OPTIONAL, if you want to run frontend seperately)
+- Maven (OPTIONAL, if you are running the program that is not packaged)
+- <a href="https://www.graalvm.org/">GraalVM</a> (OPTIONAL, if you want to run the native/compiled version)
 
 ## How To Run it?
 
