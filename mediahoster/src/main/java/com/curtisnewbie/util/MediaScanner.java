@@ -70,13 +70,22 @@ public class MediaScanner {
     /** Concurrent Hash map for media files */
     private Map<String, File> mediaMap = new ConcurrentHashMap<>();
 
-    void init(@Observes StartupEvent startup) {
+    void onStart(@Observes StartupEvent startup) {
+        initPath();
+        scanMediaDir();
+        initChangeDetector();
+    }
+
+    /**
+     * Init path to the media directory
+     */
+    protected void initPath() {
         if (isValidMediaDir()) {
             logger.info("MediaScanner Successfully init, Media Directory:\"" + pathToMediaDir + "\"");
             mediaDir = pathToMediaDir;
         } else {
             logger.error(
-                    "Configured path to your media directory is illegal. It must be an absolute path, and it must be a directory/folder. Configured Media Directory:\""
+                    "Configured path to your media directory is illegal. It must be a directory/folder. Your configured Media Directory:\""
                             + pathToMediaDir + "\"");
             if (createDefaultMediaDir()) {
                 logger.info("Default media directory has been created: Media Directory:\"" + defaultMediaDir
@@ -86,8 +95,6 @@ public class MediaScanner {
                 mediaDir = null;
             }
         }
-        scanMediaDir();
-        initChangeDetector();
     }
 
     /**
@@ -95,7 +102,7 @@ public class MediaScanner {
      * 
      * @return whether configured path to the media directory is valid
      */
-    public boolean isValidMediaDir() {
+    protected boolean isValidMediaDir() {
         if (pathToMediaDir == null || pathToMediaDir.isEmpty())
             return false;
 
@@ -111,7 +118,7 @@ public class MediaScanner {
      * 
      * @return if the default media directory is created
      */
-    public boolean createDefaultMediaDir() {
+    protected boolean createDefaultMediaDir() {
         File file = new File(defaultMediaDir);
         if (file.exists() && file.isDirectory())
             return true;
@@ -160,7 +167,7 @@ public class MediaScanner {
         }
     }
 
-    private void clearMediaMap() {
+    protected void clearMediaMap() {
         this.mediaMap.clear();
     }
 
