@@ -45,6 +45,10 @@ import io.quarkus.runtime.StartupEvent;
  * directory are modified, removed and so on, it will scan the whole directory
  * and update its {@code Map<String, File> mediaMap}.
  * </p>
+ * <p>
+ * Notice that {@link MediaScanner#initPath()} is a point where the program
+ * might exit, when it fails to find a usable directory.
+ * </p>
  * 
  * @see {@link MediaScanner#init()}
  * @see {@link MediaScanner#initChangeDetector()}
@@ -77,27 +81,39 @@ public class MediaScanner {
 
     void onStart(@Observes StartupEvent startup) {
         initPath();
-        scanMediaDir();
+        managedExecutor.execute(() -> {
+            scanMediaDir(); /* scan for the first time */
+        });
         initChangeDetector();
     }
 
     /**
+     * <p>
      * Init path to the media directory
+     * </p>
+     * <p>
+     * When the configured path is incorrect, and it fails to use the default media
+     * directory. It will abort and exit the program.
+     * </p>
      */
     protected void initPath() {
         if (isValidMediaDir()) {
             logger.info("MediaScanner Successfully init, Media Directory:\"" + pathToMediaDir + "\"");
             mediaDir = pathToMediaDir;
         } else {
-            logger.error(
-                    "Configured path to your media directory is illegal. It must be a directory/folder. Your configured Media Directory:\""
-                            + pathToMediaDir + "\"");
+            logger.error(String.format(
+                    "The configured media directory:'%s' is illegal. It must be a directory/folder. Changing to the default configuration...",
+                    pathToMediaDir));
             if (createDefaultMediaDir()) {
-                logger.info("Default media directory has been created: Media Directory:\"" + defaultMediaDir
-                        + "\". Please place your media files in it.");
+                logger.info(String.format(
+                        "Default media directory has been created: Media Directory: '%s'. Please place your media files in it.",
+                        defaultMediaDir));
                 mediaDir = defaultMediaDir;
             } else {
+                logger.fatal(String.format("Failed to find and create the default media directory: '%s'. Aborting...",
+                        defaultMediaDir));
                 mediaDir = null;
+                System.exit(1);
             }
         }
     }
