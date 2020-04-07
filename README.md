@@ -112,7 +112,7 @@ If you have a preferred directory for it to use, you can configure this as below
 
 ## Issues
 
-In previous version **Quarkus 1.2.1.Final**, under certain situations, the `java.lang.IllegalMonitorStateException` is thrown. This is a bug in Quarkus and has been fixed already in **Quarkus 1.3.0.Final**. However, in order to migrate to this latest version, the unit tests must be disabled. For unknown reasons, this version of Quarkus do not recoginised the test methods, though this may be caused by the new class loading architecture. The unit tests should be enabled as soon as I find a workaround or they fix it.
+In previous version **Quarkus 1.2.1.Final**, under certain situations, the `java.lang.IllegalMonitorStateException` is thrown. This is a bug in Quarkus and has been fixed already in **Quarkus 1.3.0.Final**. However, in order to migrate to this latest version, the unit tests must be disabled. For unknown reasons, this version does not recoginise/load the test methods, though this may be caused by the new class loading architecture. The unit tests will be enabled as soon as I find a workaround.
 
 ## Demo
 
