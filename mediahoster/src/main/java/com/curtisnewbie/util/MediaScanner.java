@@ -105,15 +105,15 @@ public class MediaScanner {
      */
     protected void initPath() {
         if (isValidMediaDir()) {
-            logger.info("MediaScanner Successfully initialised, Media Directory:\"" + pathToMediaDir + "\"");
+            logger.info(String.format("MediaScanner Successfully initialised, Media Directory:'%s'", pathToMediaDir));
             mediaDir = pathToMediaDir;
         } else {
             logger.error(String.format(
-                    "The configured media directory:'%s' is illegal. It must be a directory/folder. Changing to the default configuration...",
+                    "The configured media directory: '%s' is illegal. It must be a directory/folder. Changing to the default configuration...",
                     pathToMediaDir));
             if (createDefaultMediaDir()) {
                 logger.info(String.format(
-                        "Default media directory has been created: Media Directory: '%s'. Please place your media files in it.",
+                        "Default media directory has been created. Media Directory: '%s'. Please place your media files in it.",
                         defaultMediaDir));
                 mediaDir = defaultMediaDir;
             } else {
@@ -207,7 +207,7 @@ public class MediaScanner {
      */
     protected void scanMediaDir() {
         if (mediaDir != null) {
-            logger.info("Scanning Media Directory:" + mediaDir);
+            logger.info(String.format("Scanning Media Directory:'%s'", mediaDir));
             Map<String, File> tempMap = new HashMap<>();
             scan(tempMap, new File(mediaDir));
             for (var pair : mediaMap.entrySet()) {
