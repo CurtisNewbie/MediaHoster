@@ -1,6 +1,6 @@
 # Media Hoster
 
-A program that scans (every 1 second), hosts and streams media files to other devices using REST web services/ HTTP protocols. If you are curious of what it does, have a look at the GIF Demo in the last section.
+A program that automatically scans, hosts and streams media files to other devices using REST web services/ HTTP protocols. If you are curious of what it does, have a look at the GIF Demo in the last section. I have personally tested it on different devices, it's working properly on Linux, Windows OS, Android and IOS.
 
 **Disclaimer:_You should only use it for non-sensetive data and in secure network, as it does not provide any encryption. The data transferred between your devices are only protected by your own network, e.g., WIFI and so on. I personally only use it for streaming movies in local network._**
 
@@ -24,7 +24,7 @@ This section tells you how to run the executable, the next section shows you how
 
 If the program is packaged and the angular app is bundled inside the jar file (e.g., the ones in release), you can run it in the normal way. It will start listening to localhost:8080.
 
-    java -jar mediahoster-1.0.4-bundled.jar
+    java -jar mediahoster-1.0.5-bundled.jar
 
 However, you must be aware that, by default, this program is packaged to be a fat jar that includes all dependencies (around 14mb including angular app). This command will not work if you intend to run a thin jar without `/lib` files. More on <a href="https://quarkus.io/guides/getting-started">Quarkus</a>.
 
@@ -75,7 +75,7 @@ To get a specific media file for streaming or downloading, your provide name of 
 To get the number of media files available:
 
     GET - return the number of media files available (text/plain)
-    
+
     http://yourIp:8080/media/amount
 
 ## Packaging Bundled Version Using Script
@@ -109,6 +109,10 @@ By default, the Media Hoster application creates a folder named `media/` at wher
 If you have a preferred directory for it to use, you can configure this as below in `./mediahoster/src/main/resources/application.properties`, it won't delete nor overwrite your files. If the provided path is illegal, it simply outputs an error and uses its default folder instead.
 
     path_to_media_directory=/my/preferred/media/directory
+
+## Issues
+
+In previous version **Quarkus 1.2.1.Final**, under certain situations, the `java.lang.IllegalMonitorStateException` is thrown. This is a bug in Quarkus and has been fixed already in **Quarkus 1.3.0.Final**. However, in order to migrate to this latest version, the unit tests must be disabled. For unknown reasons, this version of Quarkus do not recoginised the test methods, though this may be caused by the new class loading architecture. The unit tests should be enabled as soon as I find a workaround or they fix it.
 
 ## Demo
 
