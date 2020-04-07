@@ -10,10 +10,16 @@ import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+/**
+ * Disabled until the unit tests methods are recognised/loaded by Quarkus
+ * 1.3.0.Final, this may be due to the new class loading architecture.
+ */
+@Disabled
 @QuarkusTest
 public class MediaResourcesTest {
 
