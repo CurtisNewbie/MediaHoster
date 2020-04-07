@@ -10,21 +10,14 @@ import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-/**
- * disabled until I find a way to properly mock the
- * {@link com.curtisnewbie.util.MediaScanner#initChangeDetector()}
- */
-@Disabled
 @QuarkusTest
 public class MediaResourcesTest {
 
-    static final String MEDIA_DIR = "media_test";
-
+    static final String MEDIA_DIR = "target/media_test";
     static final String MEDIA_ONE = "mediaOne.mp4";
     static final String MEDIA_TWO = "mediaTwo.mp4";
     static final String DEMO_DATA = "1234";

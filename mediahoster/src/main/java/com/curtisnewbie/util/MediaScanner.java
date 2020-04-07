@@ -1,6 +1,8 @@
 package com.curtisnewbie.util;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -68,6 +70,10 @@ public class MediaScanner {
     String defaultMediaDir;
 
     @Inject
+    @ConfigProperty(name = "init_change_detector", defaultValue = "true")
+    boolean initDetector;
+
+    @Inject
     ManagedExecutor managedExecutor;
 
     /** Path to the media directory */
@@ -84,7 +90,8 @@ public class MediaScanner {
         managedExecutor.execute(() -> {
             scanMediaDir(); /* scan for the first time */
         });
-        initChangeDetector();
+        if (initDetector)
+            initChangeDetector();
     }
 
     /**
@@ -98,7 +105,7 @@ public class MediaScanner {
      */
     protected void initPath() {
         if (isValidMediaDir()) {
-            logger.info("MediaScanner Successfully init, Media Directory:\"" + pathToMediaDir + "\"");
+            logger.info("MediaScanner Successfully initialised, Media Directory:\"" + pathToMediaDir + "\"");
             mediaDir = pathToMediaDir;
         } else {
             logger.error(String.format(
