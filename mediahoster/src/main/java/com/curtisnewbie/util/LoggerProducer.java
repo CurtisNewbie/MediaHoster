@@ -6,6 +6,16 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.logging.Logger;
 
+/**
+ * ------------------------------------
+ * 
+ * Author: Yongjie Zhuang
+ * 
+ * ------------------------------------
+ * <p>
+ * Producer of Logger
+ * </p>
+ */
 @ApplicationScoped
 public class LoggerProducer {
 

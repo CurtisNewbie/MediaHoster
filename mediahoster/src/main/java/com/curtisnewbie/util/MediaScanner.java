@@ -26,6 +26,11 @@ import org.jboss.logging.Logger;
 import io.quarkus.runtime.StartupEvent;
 
 /**
+ * ------------------------------------
+ * 
+ * Author: Yongjie Zhuang
+ * 
+ * ------------------------------------
  * <p>
  * MediaScanner that is reponsible for initialising path the media directory and
  * scanning all available media files in the specified directory.

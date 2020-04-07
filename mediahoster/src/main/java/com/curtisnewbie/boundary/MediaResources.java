@@ -29,6 +29,16 @@ import com.curtisnewbie.util.MediaStreaming;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
+/**
+ * ------------------------------------
+ * 
+ * Author: Yongjie Zhuang
+ * 
+ * ------------------------------------
+ * <p>
+ * Endpoints for media resources
+ * </p>
+ */
 @Path("media")
 public class MediaResources {
 

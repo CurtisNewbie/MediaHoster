@@ -9,6 +9,16 @@ import java.io.OutputStream;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 
+/**
+ * ------------------------------------
+ * 
+ * Author: Yongjie Zhuang
+ * 
+ * ------------------------------------
+ * <p>
+ * A StreamingOutput specifically for byte-range requests
+ * </p>
+ */
 public class MediaStreaming implements StreamingOutput {
 
     // 5mb buffer
