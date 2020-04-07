@@ -170,7 +170,7 @@ public class MediaScanner {
             changeDetectorStarted = true;
             logger.info("Change detector initialised.");
 
-            managedExecutor.execute(() -> {
+            new Thread(() -> {
                 Path dir = new File(mediaDir).toPath();
                 try {
                     WatchService watcher = FileSystems.getDefault().newWatchService();
@@ -181,17 +181,16 @@ public class MediaScanner {
                             for (var e : key.pollEvents()) {
                                 logger.info("Detected changes in media directory.");
                                 var kind = e.kind();
-                                if (kind == ENTRY_MODIFY || kind == ENTRY_CREATE)
+                                if (kind == ENTRY_MODIFY || kind == ENTRY_CREATE || kind == ENTRY_DELETE)
                                     scanMediaDir();
-                                else if (kind == ENTRY_DELETE)
-                                    clearMediaMap();
                             }
+                            key.reset();
                         }
                     }
                 } catch (Exception e) {
-                    logger.fatal(e.getMessage());
+                    logger.fatal(e);
                 }
-            });
+            }).start();
         }
     }
 
