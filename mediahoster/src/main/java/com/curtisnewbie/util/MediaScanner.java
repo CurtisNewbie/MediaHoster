@@ -1,12 +1,19 @@
 package com.curtisnewbie.util;
 
+import static java.nio.file.StandardWatchEventKinds.*;
+
 import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -17,10 +24,25 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
 import io.quarkus.runtime.StartupEvent;
-import io.quarkus.scheduler.Scheduled;
 
 /**
- * Scan all available media files
+ * <p>
+ * MediaScanner that is reponsible for initialising path the media directory and
+ * scanning all available media files in the specified directory.
+ * </p>
+ * <p>
+ * The path to the media directory is loaded from {@code application.properties}
+ * file, if the specified one is incorrect, it will use the default one instead.
+ * </p>
+ * <p>
+ * It provides functionality to continuosly watch for changes in the media
+ * directory using {@code java.nio.file.WatchService;}. If files in this
+ * directory are modified, removed and so on, it will scan the whole directory
+ * and update its {@code Map<String, File> mediaMap}.
+ * </p>
+ * 
+ * @see {@link MediaScanner#init()}
+ * @see {@link MediaScanner#initChangeDetector()}
  */
 @ApplicationScoped
 public class MediaScanner {
@@ -39,7 +61,11 @@ public class MediaScanner {
     @Inject
     ManagedExecutor managedExecutor;
 
+    /** Path to the media directory */
     private String mediaDir;
+
+    /** Indicate whether the change detector has started */
+    private volatile boolean changeDetectorStarted = false;
 
     /** Concurrent Hash map for media files */
     private Map<String, File> mediaMap = new ConcurrentHashMap<>();
@@ -60,6 +86,8 @@ public class MediaScanner {
                 mediaDir = null;
             }
         }
+        scanMediaDir();
+        initChangeDetector();
     }
 
     /**
@@ -93,15 +121,59 @@ public class MediaScanner {
 
     /**
      * <p>
-     * Scanning media directory and updating the {@code Map mediaMap} in every 1
+     * Init a Watch service to watch for changes in the media directory. It will
+     * only start for once. Once it's started, the proceeding calls will simply do
+     * nothing.
+     * </p>
+     * <p>
+     * Once the change detector has started, it will watch for changes in every 1
      * sec.
+     * </p>
+     */
+    protected void initChangeDetector() {
+        if (!changeDetectorStarted && mediaDir != null) {
+            changeDetectorStarted = true;
+            logger.info("Change detector initialised.");
+
+            managedExecutor.execute(() -> {
+                Path dir = new File(mediaDir).toPath();
+                try {
+                    WatchService watcher = FileSystems.getDefault().newWatchService();
+                    dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE);
+                    while (true) {
+                        WatchKey key = watcher.poll(1, TimeUnit.SECONDS);
+                        if (key != null) {
+                            for (var e : key.pollEvents()) {
+                                logger.info("Detected changes in media directory.");
+                                var kind = e.kind();
+                                if (kind == ENTRY_MODIFY || kind == ENTRY_CREATE)
+                                    scanMediaDir();
+                                else if (kind == ENTRY_DELETE)
+                                    clearMediaMap();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.fatal(e.getMessage());
+                }
+            });
+        }
+    }
+
+    private void clearMediaMap() {
+        this.mediaMap.clear();
+    }
+
+    /**
+     * <p>
+     * Scanning media directory and updating the {@code Map mediaMap}
      * </p>
      * 
      * @see MediaScanner#scan(Map, File)
      */
-    @Scheduled(every = "1s")
-    public void scanMediaDir() {
+    protected void scanMediaDir() {
         if (mediaDir != null) {
+            logger.info("Scanning Media Directory:" + mediaDir);
             Map<String, File> tempMap = new HashMap<>();
             scan(tempMap, new File(mediaDir));
             for (var pair : mediaMap.entrySet()) {
