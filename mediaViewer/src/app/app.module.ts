@@ -11,6 +11,6 @@ import { PlayerComponent } from "./player/player.component";
   declarations: [AppComponent, SelectBarComponent, PlayerComponent],
   imports: [BrowserModule, HttpClientModule, FormsModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

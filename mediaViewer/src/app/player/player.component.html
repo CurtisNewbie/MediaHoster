@@ -8,7 +8,8 @@
             {{displayedUrl}}</span></h4>
     <div class="ml-5 mr-5">
         <div class="embed-responsive embed-responsive-16by9">
-            <video id="player" [src]="srcUrl" class="p-3 embed-responsive-item" controls preload="metadata">
+            <video #videoPlayer id="player" (timeupdate)="onTimeChanged()" [src]="srcUrl"
+                class="p-3 embed-responsive-item" controls preload="metadata">
             </video>
         </div>
     </div>
