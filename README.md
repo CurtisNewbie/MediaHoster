@@ -14,7 +14,7 @@ This repository contains two main applications:
 - Java 11
 - Nodejs (OPTIONAL, if you want to run frontend seperately)
 - Maven (OPTIONAL, if you are running the program that is not packaged)
-- <a href="https://www.graalvm.org/">GraalVM</a> (OPTIONAL, if you want to run the native/compiled version)
+- <a href="https://www.graalvm.org/">GraalVM</a> (OPTIONAL, if you want to compile the native version)
 
 ## How To Run it?
 
@@ -24,7 +24,7 @@ This section tells you how to run the executable, the next section shows you how
 
 If the program is packaged and the angular app is bundled inside the jar file (e.g., the ones in release), you can run it in the normal way. It will start listening to localhost:8080.
 
-    java -jar mediahoster-1.0.5-bundled.jar
+    java -jar mediahoster-1.0.6-bundled.jar
 
 However, you must be aware that, by default, this program is packaged to be a fat jar that includes all dependencies (around 14mb including angular app). This command will not work if you intend to run a thin jar without `/lib` files. More on <a href="https://quarkus.io/guides/getting-started">Quarkus</a>.
 
@@ -115,5 +115,7 @@ If you have a preferred directory for it to use, you can configure this as below
 In previous version **Quarkus 1.2.1.Final**, under certain situations, the `java.lang.IllegalMonitorStateException` is thrown. This is a bug in Quarkus and has been fixed already in **Quarkus 1.3.0.Final**. However, in order to migrate to this latest version, the unit tests must be disabled. For unknown reasons, this version does not recoginise/load the test methods, though this may be caused by the new class loading architecture. The unit tests will be enabled as soon as I find a workaround.
 
 ## Demo
+
+[Mar 18, 2020]
 
 <img src="https://user-images.githubusercontent.com/45169791/76889978-6c474700-687e-11ea-8b06-de00ab16bcab.gif">
