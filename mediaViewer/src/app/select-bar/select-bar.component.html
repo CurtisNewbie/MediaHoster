@@ -5,7 +5,8 @@
     <div *ngIf="searchResult.length" style="background-color: darkgrey;" class="rounded">
         <div class="p-2 m-2">
             <ul *ngFor="let i of searchResult" class="list-group p-1">
-                <a class="list-group-item list-group-item-action" (click)="play(medias[i])">
+                <a class="list-group-item list-group-item-action" style="word-break: break-all"
+                    (click)="play(medias[i])">
                     {{medias[i]}}
                 </a>
             </ul>
