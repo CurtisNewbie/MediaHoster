@@ -1,4 +1,4 @@
-<div class="mt-3 mb-4">
+<div class="container-fluid">
     <h3>Search:</h3>
     <input id="search" class="form-control" (keyup)="search()" [(ngModel)]="searchedText"
         placeholder="Search media files" />
@@ -11,11 +11,10 @@
             </ul>
         </div>
     </div>
+    <h3 class="pt-2">Media Files <span *ngIf="amount"> - {{amount}} In Total</span></h3>
+    <div *ngFor=" let m of medias" class="list-group">
+        <li class="list-group-item list-group-item-action" style="word-break: break-all" (click)="play(m)">
+            <div>{{m}}</div>
+        </li>
+    </div>
 </div>
-
-<h3>Media Files <span *ngIf="amount"> - {{amount}} In Total</span></h3>
-<ul *ngFor=" let m of medias" class="list-group">
-    <a class="list-group-item list-group-item-action" (click)="play(m)">
-        {{m}}
-    </a>
-</ul>
