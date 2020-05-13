@@ -2,12 +2,14 @@
 
 A program that automatically scans, hosts and streams media files to other devices using REST web services/ HTTP protocols. If you are curious of what it does, have a look at the GIF Demo in the last section. I have personally tested it on different devices, it's working properly on Linux, Windows OS, Android and IOS.
 
-**Disclaimer:_You should only use it for non-sensetive data and in secure network, as it does not provide any encryption. The data transferred between your devices are only protected by your own network, e.g., WIFI and so on. I personally only use it for streaming movies in local network._**
+**_Disclaimer:You should only use it for non-sensetive data and in secure network, as it does not provide any data encryption. The data transferred between your devices are only protected by your own network, e.g., WIFI and so on._**
 
 This repository contains two main applications:
 
-- **Quarkus - Media Hoster** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediahoster">"./mediahoster"</a>) that scans files in specified folder, and exposes them as resources via HTTP/REST web services. Media resources can be <a href="https://medium.com/canal-tech/how-video-streaming-works-on-the-web-an-introduction-7919739f7e1">streamed in chunked data</a> (e.g., played directly on your video player or web browser) or downloaded. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests">Partial Content (206) and Byte-Range Requests</a> are also supported.
-- **Angular - Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) that facilitates the interaction with the Media Hoster, using this is optional. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the playlist, plays them on the webpage and does all the HTTP calls for you.
+- **Quarkus - Media Hoster** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediahoster">"./mediahoster"</a>) that scans files in specified folder, and exposes them as resources via RESTful web services. Media resources can be <a href="https://medium.com/canal-tech/how-video-streaming-works-on-the-web-an-introduction-7919739f7e1">streamed in chunked data</a> (e.g., played directly on your video player or web browser) or downloaded. The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests">Byte-Range Requests</a> is supported.
+- **Angular - Media Viewer** (in folder <a href="https://github.com/CurtisNewbie/MediaHoster/tree/master/mediaViewer">"./mediaViewer"</a>) that facilitates the interaction with the Media Hoster. You can send HTTP requests directly to retrieve the whole media file. However, for your convenience, this angular app shows you the playlist, plays them on the webpage and does all the HTTP calls for you.
+
+An **Android TV app** is developed to work with this webapp. This app does the same thing as the Angular app, except that it works on an Android TV device. It's available in <a href="https://github.com/CurtisNewbie/AndrodTv_UrlPlayer">AndrodTv_UrlPlayer</a> 
 
 **Prerequisite**
 
