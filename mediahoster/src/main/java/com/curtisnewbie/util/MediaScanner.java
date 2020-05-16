@@ -5,6 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.WatchKey;
@@ -87,11 +88,24 @@ public class MediaScanner {
 
     void onStart(@Observes StartupEvent startup) {
         initPath();
+        logIp();
         managedExecutor.execute(() -> {
             scanMediaDir(); /* scan for the first time */
         });
         if (initDetector)
             initChangeDetector();
+    }
+
+    /**
+     * Log the ip address of this server
+     */
+    private void logIp() {
+        try {
+            InetAddress inet = InetAddress.getLocalHost();
+            logger.info(String.format("IP Address of MediaHoster: '%s'", inet.getHostAddress()));
+        } catch (Exception e) {
+            logger.error("Unable to display MediaHoster's IP Address.");
+        }
     }
 
     /**
