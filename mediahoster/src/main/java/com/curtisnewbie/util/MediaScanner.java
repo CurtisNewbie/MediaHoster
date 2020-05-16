@@ -279,7 +279,6 @@ public class MediaScanner {
      * @return the media file, or {@code NULL} if file doesn't exist
      */
     public File getMediaByName(String fileName) {
-        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
@@ -296,7 +295,6 @@ public class MediaScanner {
      * @return whether the media file exists
      */
     public boolean hasMediaFile(String filename) {
-        filename = convertSlash(filename);
         if (mediaMap.containsKey(filename))
             return true;
         else
@@ -310,7 +308,6 @@ public class MediaScanner {
      * @return media file size in bytes, or 0 if file doesn't exist.
      */
     public long getMediaSizeByName(String fileName) {
-        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {
@@ -327,7 +324,6 @@ public class MediaScanner {
      * @return last modified date, or {@code NULL} if file doesn't exist.
      */
     public Date getMediaLastModifiedByName(String fileName) {
-        fileName = convertSlash(fileName);
         if (mediaMap.containsKey(fileName)) {
             File file = mediaMap.get(fileName);
             if (file.exists()) {

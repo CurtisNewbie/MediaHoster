@@ -83,10 +83,10 @@ public class MediaResources {
                 asyncResponse.resume(Response.status(Status.NOT_FOUND).build());
                 return;
             }
-
-            final File mediaFile = scanner.getMediaByName(filename);
-            final long length = scanner.getMediaSizeByName(filename);
-            final Date lastModified = scanner.getMediaLastModifiedByName(filename);
+            final String fname = scanner.convertSlash(filename);
+            final File mediaFile = scanner.getMediaByName(fname);
+            final long length = scanner.getMediaSizeByName(fname);
+            final Date lastModified = scanner.getMediaLastModifiedByName(fname);
 
             long from = 0;
             long to = length - 1;
