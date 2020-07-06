@@ -97,7 +97,7 @@ public class MediaScanner {
     private void logIp() {
         try {
             InetAddress inet = InetAddress.getLocalHost();
-            logger.info(String.format("IP Address of MediaHoster: '%s'", inet.getHostAddress()));
+            logger.info(String.format("IP: '%s'", inet.getHostAddress()));
         } catch (Exception e) {
             logger.error("Unable to display MediaHoster's IP Address.");
         }
