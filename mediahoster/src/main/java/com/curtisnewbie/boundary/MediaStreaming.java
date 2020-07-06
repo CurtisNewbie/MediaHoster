@@ -1,4 +1,4 @@
-package com.curtisnewbie.util;
+package com.curtisnewbie.boundary;
 
 import java.io.File;
 import java.io.FileInputStream;
