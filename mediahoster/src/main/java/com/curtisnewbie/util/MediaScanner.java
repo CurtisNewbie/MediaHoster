@@ -238,12 +238,14 @@ public class MediaScanner {
      */
     private void scan(Map<String, File> tempMap, File dir) {
         var list = dir.listFiles();
+        String fileExt;
         for (File f : list) {
             if (f.isDirectory()) {
                 scan(tempMap, f);
             } else {
                 String path = convertSlash(f.getPath());
-                if (!tempMap.containsKey(path)) {
+                if (!tempMap.containsKey(path) && (fileExt = extractFileExt(path)) != null
+                        && VideoType.contains(fileExt)) {
                     tempMap.put(path, f);
                 }
             }
@@ -336,5 +338,20 @@ public class MediaScanner {
     /** Convert all "\" to "/", this is for Windows OS compatibility */
     public String convertSlash(String str) {
         return str.replace("\\", "/");
+    }
+
+    /**
+     * Extract file extension, return NULL if not found
+     * 
+     * @param path absolute or relative path
+     * @return file extension or NULL if not found
+     */
+    public String extractFileExt(String path) {
+        String fileExt = null;
+        int len = path.length();
+        int i = path.lastIndexOf('.');
+        if (i > 0 && i != len - 1)
+            fileExt = path.substring(i + 1);
+        return fileExt;
     }
 }

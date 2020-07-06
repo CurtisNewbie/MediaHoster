@@ -61,7 +61,6 @@ public class MediaResources {
     }
 
     @HEAD
-    @Produces("video/mp4")
     public Response header(@QueryParam("filename") String filename) {
         logger.info("HEAD - Retrieving " + filename);
         if (filename == null)
@@ -75,7 +74,7 @@ public class MediaResources {
     }
 
     @GET
-    @Produces("video/mp4")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public void getMediaByName(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
             @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
