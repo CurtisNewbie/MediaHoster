@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
@@ -60,8 +59,7 @@ public class MediaScanner {
 
     private static Logger logger = Logger.getLogger(MediaScanner.class);
 
-    @Inject
-    protected ManagedExecutor managedExecutor;
+    private final ManagedExecutor managedExecutor;
 
     /** Path to the media directory */
     private String mediaDir;
@@ -75,9 +73,10 @@ public class MediaScanner {
     private final CLIConfig cliConfig;
     private final PropertyConfig propertyConfig;
 
-    public MediaScanner(CLIConfig cliConfig, PropertyConfig propertyConfig) {
+    public MediaScanner(CLIConfig cliConfig, PropertyConfig propertyConfig, ManagedExecutor executor) {
         this.cliConfig = cliConfig;
         this.propertyConfig = propertyConfig;
+        this.managedExecutor = executor;
     }
 
     void onStart(@Observes StartupEvent startup) {
