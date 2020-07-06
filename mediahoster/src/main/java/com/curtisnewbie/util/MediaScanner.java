@@ -22,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
@@ -60,22 +59,10 @@ import io.quarkus.runtime.StartupEvent;
 public class MediaScanner {
 
     @Inject
-    Logger logger;
+    protected Logger logger;
 
     @Inject
-    @ConfigProperty(name = "path_to_media_directory", defaultValue = "media")
-    String pathToMediaDir;
-
-    @Inject
-    @ConfigProperty(name = "default_media_directory", defaultValue = "media")
-    String defaultMediaDir;
-
-    @Inject
-    @ConfigProperty(name = "init_change_detector", defaultValue = "true")
-    boolean initDetector;
-
-    @Inject
-    ManagedExecutor managedExecutor;
+    protected ManagedExecutor managedExecutor;
 
     /** Path to the media directory */
     private String mediaDir;
@@ -86,13 +73,21 @@ public class MediaScanner {
     /** Concurrent Hash map for media files */
     private Map<String, File> mediaMap = new ConcurrentHashMap<>();
 
+    private final CLIConfig cliConfig;
+    private final PropertyConfig propertyConfig;
+
+    public MediaScanner(CLIConfig cliConfig, PropertyConfig propertyConfig) {
+        this.cliConfig = cliConfig;
+        this.propertyConfig = propertyConfig;
+    }
+
     void onStart(@Observes StartupEvent startup) {
         initPath();
         logIp();
         managedExecutor.execute(() -> {
             scanMediaDir(); /* scan for the first time */
         });
-        if (initDetector)
+        if (propertyConfig.shouldInitChangeDetector())
             initChangeDetector();
     }
 
@@ -118,25 +113,27 @@ public class MediaScanner {
      * </p>
      */
     protected void initPath() {
-        if (isValidMediaDir()) {
-            logger.info(String.format("MediaScanner Successfully initialised, Media Directory:'%s'", pathToMediaDir));
-            mediaDir = pathToMediaDir;
+        // use directory specified in CLI if possible
+        String dir = cliConfig.dir();
+        // use directory specified in property file as second option
+        if (dir == null)
+            dir = propertyConfig.getMediaDir();
+
+        if (isValidMediaDir(dir)) {
+            logger.info(String.format("MediaScanner Successfully initialised, Media Directory:'%s'", dir));
         } else {
-            logger.error(String.format(
-                    "The configured media directory: '%s' is illegal. It must be a directory/folder. Changing to the default configuration...",
-                    pathToMediaDir));
-            if (createDefaultMediaDir()) {
-                logger.info(String.format(
-                        "Default media directory has been created. Media Directory: '%s'. Please place your media files in it.",
-                        defaultMediaDir));
-                mediaDir = defaultMediaDir;
+            logger.error(String.format("Media directory: '%s' illegal. Changing to the default directory.", dir));
+            dir = propertyConfig.getDefMediaDir();
+            if (mkdir(dir)) {
+                logger.info(String.format("Using default media directory: '%s'. Please place your media files in it.",
+                        dir));
             } else {
-                logger.fatal(String.format("Failed to find and create the default media directory: '%s'. Aborting...",
-                        defaultMediaDir));
-                mediaDir = null;
+                logger.fatal(String.format("Failed to use default media directory: '%s'. Aborting...", dir));
+                dir = null;
                 System.exit(1);
             }
         }
+        mediaDir = dir;
     }
 
     /**
@@ -144,11 +141,11 @@ public class MediaScanner {
      * 
      * @return whether configured path to the media directory is valid
      */
-    protected boolean isValidMediaDir() {
-        if (pathToMediaDir == null || pathToMediaDir.isEmpty())
+    private boolean isValidMediaDir(String mediaDir) {
+        if (mediaDir == null || mediaDir.isEmpty())
             return false;
 
-        File file = new File(pathToMediaDir);
+        File file = new File(mediaDir);
         if (file.exists() && file.isDirectory())
             return true;
         else
@@ -156,15 +153,14 @@ public class MediaScanner {
     }
 
     /**
-     * Create default media directory
+     * Create directory
      * 
-     * @return if the default media directory is created
+     * @return whether the directory is created
      */
-    protected boolean createDefaultMediaDir() {
-        File file = new File(defaultMediaDir);
+    private boolean mkdir(String dir) {
+        File file = new File(dir);
         if (file.exists() && file.isDirectory())
             return true;
-
         return file.mkdir();
     }
 
