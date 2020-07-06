@@ -58,8 +58,7 @@ import io.quarkus.runtime.StartupEvent;
 @ApplicationScoped
 public class MediaScanner {
 
-    @Inject
-    protected Logger logger;
+    private static Logger logger = Logger.getLogger(MediaScanner.class);
 
     @Inject
     protected ManagedExecutor managedExecutor;

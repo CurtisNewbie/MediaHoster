@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
@@ -24,7 +22,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import com.curtisnewbie.util.MediaScanner;
-import com.curtisnewbie.util.MediaStreaming;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
@@ -42,14 +39,14 @@ import org.jboss.logging.Logger;
 @Path("media")
 public class MediaResources {
 
-    @Inject
-    Logger logger;
+    private static Logger logger = Logger.getLogger(MediaResources.class);
+    private final ManagedExecutor managedExecutor;
+    private final MediaScanner scanner;
 
-    @Inject
-    ManagedExecutor managedExecutor;
-
-    @Inject
-    MediaScanner scanner;
+    public MediaResources(ManagedExecutor executor, MediaScanner scanner) {
+        this.managedExecutor = executor;
+        this.scanner = scanner;
+    }
 
     @GET
     @Path("all")

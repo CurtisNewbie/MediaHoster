@@ -11,6 +11,8 @@ import java.nio.channels.WritableByteChannel;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 
+import com.curtisnewbie.Main;
+
 /**
  * ------------------------------------
  * 
@@ -18,7 +20,11 @@ import javax.ws.rs.core.StreamingOutput;
  * 
  * ------------------------------------
  * <p>
- * A StreamingOutput specifically for byte-range requests
+ * A StreamingOutput for streaming with byte-range requests. It's expected that
+ * a MediaStreaming is ran within separate threads, thus it checks whether the
+ * app is currently running through {@link Main#isRunning()}. When the
+ * application is expected to be terminated (isRunning() returns false), it
+ * stops the current task immediately, such that it won't block the termination.
  * </p>
  */
 public class MediaStreaming implements StreamingOutput {
@@ -37,7 +43,14 @@ public class MediaStreaming implements StreamingOutput {
     public void write(OutputStream output) throws IOException, WebApplicationException {
         try (FileChannel inChannel = new FileInputStream(file).getChannel();
                 WritableByteChannel outChannel = Channels.newChannel(output)) {
-            inChannel.transferTo(from, to - from + 1, outChannel);
+            while (from < to && Main.isRunning()) {
+                if (to - from + 1 > 5000) {
+                    inChannel.transferTo(from, 5000, outChannel);
+                    from += 5000;
+                } else {
+                    inChannel.transferTo(from, to - from + 1, outChannel);
+                }
+            }
         } catch (IOException e) {
         }
     }
