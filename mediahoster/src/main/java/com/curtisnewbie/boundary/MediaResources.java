@@ -71,7 +71,7 @@ public class MediaResources {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces("video/mp4") // changing to octet stream will make videos unplayable on IOS devices
     public void getMediaByName(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
             @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
