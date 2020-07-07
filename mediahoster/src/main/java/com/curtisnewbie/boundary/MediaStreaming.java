@@ -52,6 +52,7 @@ public class MediaStreaming implements StreamingOutput {
                     from += BUFFER_SIZE;
                 } else {
                     inChannel.transferTo(from, to - from + 1, outChannel);
+                    from = to;
                 }
             }
         } catch (IOException e) {
