@@ -7,11 +7,9 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
-
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
-
-import com.curtisnewbie.Main;
+import com.curtisnewbie.util.AppLifeCycle;
 
 /**
  * ------------------------------------
@@ -22,7 +20,7 @@ import com.curtisnewbie.Main;
  * <p>
  * A StreamingOutput for streaming with byte-range requests. It's expected that
  * a MediaStreaming is ran within separate threads, thus it checks whether the
- * app is currently running through {@link Main#isRunning()}.
+ * app is currently running through {@link AppLifeCycle#isRunning()}.
  * <p>
  * When the application is expected to be terminated (isRunning() returns
  * false), it stops the current task immediately (however, it depends on the
@@ -33,6 +31,7 @@ import com.curtisnewbie.Main;
 public class MediaStreaming implements StreamingOutput {
 
     private static final int BUFFER_SIZE = 1000;
+
     private long from;
     private long to;
     private File file;
@@ -47,7 +46,7 @@ public class MediaStreaming implements StreamingOutput {
     public void write(OutputStream output) throws IOException, WebApplicationException {
         try (FileChannel inChannel = new FileInputStream(file).getChannel();
                 WritableByteChannel outChannel = Channels.newChannel(output)) {
-            while (from < to && Main.isRunning()) {
+            while (from < to && AppLifeCycle.isRunning()) {
                 if (to - from + 1 > BUFFER_SIZE) {
                     inChannel.transferTo(from, BUFFER_SIZE, outChannel);
                     from += BUFFER_SIZE;
