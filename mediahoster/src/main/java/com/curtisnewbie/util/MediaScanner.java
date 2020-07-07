@@ -21,6 +21,9 @@ import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
+import com.curtisnewbie.config.CLIConfig;
+import com.curtisnewbie.config.PropertyConfig;
+
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.logging.Logger;
 
@@ -33,18 +36,20 @@ import io.quarkus.runtime.StartupEvent;
  * 
  * ------------------------------------
  * <p>
- * MediaScanner that is reponsible for initialising path the media directory and
- * scanning all available media files in the specified directory.
+ * MediaScanner that is reponsible for scanning all available media files in the
+ * specified directory.
  * </p>
  * <p>
  * The path to the media directory is loaded from {@code application.properties}
- * file, if the specified one is incorrect, it will use the default one instead.
+ * file or CLI arguments. CLI configuration is always prioritised. If the
+ * specified directory (CLI or Property config) is incorrect, it will use the
+ * default one instead.
  * </p>
  * <p>
  * It provides functionality to continuosly watch for changes in the media
- * directory using {@code java.nio.file.WatchService;}. If files in this
+ * directory using {@code java.nio.file.WatchService}. If the files in this
  * directory are modified, removed and so on, it will scan the whole directory
- * and update its {@code Map<String, File> mediaMap}.
+ * again and update the changes in its {@code Map<String, File> mediaMap}.
  * </p>
  * <p>
  * Notice that {@link MediaScanner#initPath()} is a point where the program
@@ -61,7 +66,7 @@ public class MediaScanner {
 
     private final ManagedExecutor managedExecutor;
 
-    /** Path to the media directory */
+    /** Path to the media directory, initialised in {@code initPath()} */
     private String mediaDir;
 
     /** Indicate whether the change detector has started */

@@ -1,10 +1,13 @@
-package com.curtisnewbie.util;
+package com.curtisnewbie.config;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+/**
+ * Configuration in application.properties
+ */
 @ApplicationScoped
 public class PropertyConfig {
 

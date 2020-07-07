@@ -1,9 +1,12 @@
-package com.curtisnewbie.util;
+package com.curtisnewbie.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
 import io.quarkus.runtime.annotations.CommandLineArguments;
 
+/**
+ * CLI Configuration
+ */
 @ApplicationScoped
 public class CLIConfig {
 
