@@ -118,13 +118,12 @@ public class MediaScanner {
             dir = propertyConfig.getMediaDir();
 
         if (isValidMediaDir(dir)) {
-            logger.info(String.format("MediaScanner Successfully initialised, Media Directory:'%s'", dir));
+            logger.info(String.format("Media Scanner initialised, Media Directory:'%s'", dir));
         } else {
-            logger.error(String.format("Media directory: '%s' illegal. Changing to the default directory.", dir));
+            logger.error(String.format("Media directory: '%s' illegal. Changing to default config.", dir));
             dir = propertyConfig.getDefMediaDir();
             if (mkdir(dir)) {
-                logger.info(String.format("Using default media directory: '%s'. Please place your media files in it.",
-                        dir));
+                logger.info(String.format("Using default media directory: '%s'.", dir));
             } else {
                 logger.fatal(String.format("Failed to use default media directory: '%s'. Aborting...", dir));
                 dir = null;
@@ -151,7 +150,8 @@ public class MediaScanner {
     }
 
     /**
-     * Create directory
+     * Create directory if necessary. It simply returns true when the directory
+     * already exists.
      * 
      * @return whether the directory is created
      */
@@ -176,7 +176,7 @@ public class MediaScanner {
     protected void initChangeDetector() {
         if (!changeDetectorStarted && mediaDir != null) {
             changeDetectorStarted = true;
-            logger.info("Change detector initialised.");
+            logger.info("Change Detector initialised.");
 
             new Thread(() -> {
                 Path dir = new File(mediaDir).toPath();
