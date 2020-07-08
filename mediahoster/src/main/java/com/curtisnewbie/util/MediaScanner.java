@@ -207,10 +207,6 @@ public class MediaScanner {
         }
     }
 
-    protected void clearMediaMap() {
-        this.mediaMap.clear();
-    }
-
     /**
      * <p>
      * Scanning media directory and updating the {@code Map mediaMap}
