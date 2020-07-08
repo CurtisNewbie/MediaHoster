@@ -56,7 +56,7 @@ import io.quarkus.runtime.StartupEvent;
  * might exit, when it fails to find a usable directory.
  * </p>
  * 
- * @see {@link MediaScanner#init()}
+ * @see {@link MediaScanner#initPath()}
  * @see {@link MediaScanner#initChangeDetector()}
  */
 @ApplicationScoped
