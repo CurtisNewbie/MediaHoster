@@ -1,5 +1,10 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { HttpService } from "../http.service";
+import { WebSocketSubject } from "rxjs/webSocket";
+
+//TODO: this causes tight coupling, bad idea
+const FILE_ADDED = "added";
+const FILE_REMOVED = "removed";
 
 @Component({
   selector: "app-select-bar",
@@ -15,11 +20,27 @@ export class SelectBarComponent implements OnInit {
 
   @Output() selected = new EventEmitter<string>();
 
-  constructor(private http: HttpService) {}
+  constructor(private http: HttpService) { }
 
   ngOnInit() {
     this.fetchMediaList();
     this.fetchMediaAmount();
+    let wss: WebSocketSubject<string> = this.http.openWebSocketConn();
+    wss.subscribe({
+      next: (msg: string) => {
+        let splited: string[] = msg.split(":");
+        if (splited[1] == FILE_ADDED) {
+          this.medias.push(splited[0]);
+          console.log("Added", splited[0]);
+        } else if (splited[1] == FILE_REMOVED) {
+          let index = this.medias.indexOf(splited[0]);
+          if (index >= 0) {
+            this.medias.splice(index, 1);
+          }
+          console.log("Removed", splited[0]);
+        }
+      }
+    });
   }
 
   /**
