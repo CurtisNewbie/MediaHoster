@@ -63,10 +63,16 @@ public class VideoType {
         if (len > MAX_EXT_LEN) // avoid checking the whole path
             path = path.substring(len - MAX_EXT_LEN - 2);
         String ext = extractFileExt(path);
-        return ext != null && contains(ext);
+        return ext != null && isSupported(ext);
     }
 
-    public static boolean contains(String type) {
+    /**
+     * Return whether the video type is supported
+     * 
+     * @param type video type, e.g., "mp4"
+     * @return whether the video type is supported
+     */
+    public static boolean isSupported(String type) {
         return videoType.contains(type);
     }
 }
