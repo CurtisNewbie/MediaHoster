@@ -5,6 +5,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * ------------------------------------
+ * <p>
+ * Author: Yongjie Zhuang
+ * <p>
+ * ------------------------------------
+ * <p>
+ * Class that manages the video types. The types of videos are identified
+ * through file extension, and this class provides static methods to facilitate
+ * file extension extraction, and validate if the video type is infact
+ * supported.
+ * </p>
+ */
 public class VideoType {
 
     /** MediaType supported by HTML Video */
