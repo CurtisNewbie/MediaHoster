@@ -46,8 +46,9 @@ public class MediaChangeSocket {
     }
 
     private void notifyChange(String eventMsg) {
-        sessions.forEach((k, v) -> {
-            v.getAsyncRemote().sendObject(eventMsg);
-        });
+        if (eventMsg != null)
+            sessions.values().forEach((v) -> {
+                v.getAsyncRemote().sendText(eventMsg);
+            });
     }
 }
