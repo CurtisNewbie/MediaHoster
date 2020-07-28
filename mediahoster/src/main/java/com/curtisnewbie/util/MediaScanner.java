@@ -36,24 +36,23 @@ import io.quarkus.runtime.StartupEvent;
  * 
  * ------------------------------------
  * <p>
- * MediaScanner that is reponsible for scanning all available media files in the
- * specified directory.
+ * MediaScanner that is reponsible for scanning all available media files in the specified
+ * directory.
  * </p>
  * <p>
- * The path to the media directory is loaded from {@code application.properties}
- * file or CLI arguments. CLI configuration is always prioritised. If the
- * specified directory (CLI or Property config) is incorrect, it will use the
- * default one instead.
+ * The path to the media directory is loaded from {@code application.properties} file or CLI
+ * arguments. CLI configuration is always prioritised. If the specified directory (CLI or Property
+ * config) is incorrect, it will use the default one instead.
  * </p>
  * <p>
- * It provides functionality to continuosly watch for changes in the media
- * directory using {@code java.nio.file.WatchService}. If the files in this
- * directory are modified, removed and so on, it will scan the whole directory
- * again and update the changes in its {@code Map<String, File> mediaMap}.
+ * It provides functionality to continuosly watch for changes in the media directory using
+ * {@code java.nio.file.WatchService}. If the files in this directory are modified, removed and so
+ * on, it will scan the whole directory again and update the changes in its
+ * {@code Map<String, File> mediaMap}.
  * </p>
  * <p>
- * Notice that {@link MediaScanner#initPath()} is a point where the program
- * might exit, when it fails to find a usable directory.
+ * Notice that {@link MediaScanner#initPath()} is a point where the program might exit, when it
+ * fails to find a usable directory.
  * </p>
  * 
  * @see {@link MediaScanner#initPath()}
@@ -77,8 +76,8 @@ public class MediaScanner {
     /** Event Emitter for change of files (media file found or deleted) */
     private final Event<EventWithMsg> eventEmitter;
 
-    public MediaScanner(CLIConfig cliConfig, PropertyConfig propertyConfig, ManagedExecutor executor,
-            Event<EventWithMsg> eventEmitter) {
+    public MediaScanner(CLIConfig cliConfig, PropertyConfig propertyConfig,
+            ManagedExecutor executor, Event<EventWithMsg> eventEmitter) {
         this.cliConfig = cliConfig;
         this.propertyConfig = propertyConfig;
         this.managedExecutor = executor;
@@ -112,8 +111,8 @@ public class MediaScanner {
      * Init path to the media directory
      * </p>
      * <p>
-     * When the configured path is incorrect, and it fails to use the default media
-     * directory. It will abort and exit the program.
+     * When the configured path is incorrect, and it fails to use the default media directory. It
+     * will abort and exit the program.
      * </p>
      */
     protected void initPath() {
@@ -126,12 +125,14 @@ public class MediaScanner {
         if (isValidMediaDir(dir)) {
             logger.info(String.format("Media Scanner initialised, Media Directory:'%s'", dir));
         } else {
-            logger.error(String.format("Media directory: '%s' illegal. Changing to default config.", dir));
+            logger.error(String.format("Media directory: '%s' illegal. Changing to default config.",
+                    dir));
             dir = propertyConfig.getDefMediaDir();
             if (mkdir(dir)) {
                 logger.info(String.format("Using default media directory: '%s'.", dir));
             } else {
-                logger.fatal(String.format("Failed to use default media directory: '%s'. Aborting...", dir));
+                logger.fatal(String
+                        .format("Failed to use default media directory: '%s'. Aborting...", dir));
                 dir = null;
                 System.exit(1);
             }
@@ -156,8 +157,7 @@ public class MediaScanner {
     }
 
     /**
-     * Create directory if necessary. It simply returns true when the directory
-     * already exists.
+     * Create directory if necessary. It simply returns true when the directory already exists.
      * 
      * @return whether the directory is created
      */
@@ -170,13 +170,11 @@ public class MediaScanner {
 
     /**
      * <p>
-     * Init a Watch service to watch for changes in the media directory. It will
-     * only start for once. Once it's started, the proceeding calls will simply do
-     * nothing.
+     * Init a Watch service to watch for changes in the media directory. It will only start for
+     * once. Once it's started, the proceeding calls will simply do nothing.
      * </p>
      * <p>
-     * Once the change detector has started, it will watch for changes in every 1
-     * sec.
+     * Once the change detector has started, it will watch for changes in every 1 sec.
      * </p>
      */
     protected void initChangeDetector() {
@@ -195,7 +193,8 @@ public class MediaScanner {
                             for (var e : key.pollEvents()) {
                                 logger.info("Detected changes in media directory.");
                                 var kind = e.kind();
-                                if (kind == ENTRY_MODIFY || kind == ENTRY_CREATE || kind == ENTRY_DELETE)
+                                if (kind == ENTRY_MODIFY || kind == ENTRY_CREATE
+                                        || kind == ENTRY_DELETE)
                                     scanMediaDir();
                             }
                             key.reset();

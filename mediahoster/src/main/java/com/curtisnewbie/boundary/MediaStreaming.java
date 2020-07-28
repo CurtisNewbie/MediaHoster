@@ -18,14 +18,13 @@ import com.curtisnewbie.util.AppLifeCycle;
  * 
  * ------------------------------------
  * <p>
- * A StreamingOutput for streaming with byte-range requests. It's expected that
- * a MediaStreaming is ran within separate threads, thus it checks whether the
- * app is currently running through {@link AppLifeCycle#isRunning()}.
+ * A StreamingOutput for streaming with byte-range requests. It's expected that a MediaStreaming is
+ * ran within separate threads, thus it checks whether the app is currently running through
+ * {@link AppLifeCycle#isRunning()}.
  * <p>
- * When the application is expected to be terminated (isRunning() returns
- * false), it stops the current task immediately (however, it depends on the
- * {@code BUFFER_SIZE}, it's more reactive if the {@code BUFFER_SIZE} is
- * smaller), such that it won't block the application shutdown.
+ * When the application is expected to be terminated (isRunning() returns false), it stops the
+ * current task immediately (however, it depends on the {@code BUFFER_SIZE}, it's more reactive if
+ * the {@code BUFFER_SIZE} is smaller), such that it won't block the application shutdown.
  * </p>
  */
 public class MediaStreaming implements StreamingOutput {

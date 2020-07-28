@@ -65,15 +65,16 @@ public class MediaResources {
 
         long len = scanner.getMediaSizeByName(filename);
         if (len > 0)
-            return Response.ok().status(Status.PARTIAL_CONTENT).header("Accept-Ranges", "bytes").build();
+            return Response.ok().status(Status.PARTIAL_CONTENT).header("Accept-Ranges", "bytes")
+                    .build();
         else
             throw new NotFoundException();
     }
 
     @GET
     @Produces("video/mp4") // changing to octet stream will make videos unplayable on IOS devices
-    public void getMediaByName(@Suspended AsyncResponse asyncResponse, @QueryParam("filename") String filename,
-            @HeaderParam("Range") String rangeHeader) {
+    public void getMediaByName(@Suspended AsyncResponse asyncResponse,
+            @QueryParam("filename") String filename, @HeaderParam("Range") String rangeHeader) {
         managedExecutor.runAsync(() -> {
             if (!scanner.hasMediaFile(filename)) {
                 asyncResponse.resume(Response.status(Status.NOT_FOUND).build());
@@ -102,7 +103,8 @@ public class MediaResources {
                 }
             }
             logger.info("GET - Retrieving Media File - \"" + filename + "\""
-                    + (rangeHeader != null ? String.format(" Requested Byte Range %d-%d", from, to) : ""));
+                    + (rangeHeader != null ? String.format(" Requested Byte Range %d-%d", from, to)
+                            : ""));
             // 216 not satisfiable range
             if (from < 0 || to >= length) {
                 asyncResponse.resume(Response.status(Status.REQUESTED_RANGE_NOT_SATISFIABLE)
@@ -117,7 +119,8 @@ public class MediaResources {
 
                 resp = resp.lastModified(lastModified)
                         .header("Content-Range", String.format("bytes %d-%d/%d", from, to, length))
-                        .header("Accept-Ranges", "bytes").header(HttpHeaders.CONTENT_LENGTH, to - from + 1);
+                        .header("Accept-Ranges", "bytes")
+                        .header(HttpHeaders.CONTENT_LENGTH, to - from + 1);
                 asyncResponse.resume(resp.build());
             }
         });

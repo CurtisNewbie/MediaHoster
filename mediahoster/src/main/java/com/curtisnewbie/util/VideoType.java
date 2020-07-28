@@ -12,10 +12,9 @@ import java.util.TreeSet;
  * <p>
  * ------------------------------------
  * <p>
- * Class that manages the video types. The types of videos are identified
- * through file extension, and this class provides static methods to facilitate
- * file extension extraction, and validate if the video type is infact
- * supported.
+ * Class that manages the video types. The types of videos are identified through file extension,
+ * and this class provides static methods to facilitate file extension extraction, and validate if
+ * the video type is infact supported.
  * </p>
  */
 public class VideoType {
@@ -52,7 +51,7 @@ public class VideoType {
     }
 
     /**
-     * Return wehther the file is a valid/supported video file.
+     * Return whether the file is a valid/supported video file.
      * <p>
      * This is verified by checking file extension name
      * 
